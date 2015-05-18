@@ -1,12 +1,9 @@
 #r "packages/FAKE/tools/FakeLib.dll" // include Fake lib
-#r @"System.IO.Compression"
-#r @"System.IO.Compression.FileSystem"
 
 open System
 open System.Net
 open System.IO
-open System.IO.Compression
-open Fake 
+open Fake
 
 let sublimePath () = 
   let UnixPaths = 
@@ -21,7 +18,7 @@ let sublimePath () =
   let directories = 
      searchPaths 
      |> List.filter Directory.Exists
-     
+
   match directories.Length with
      | 0 -> 
          trace "No Sublime text 3 installation found" 
