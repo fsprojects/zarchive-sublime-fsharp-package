@@ -3,6 +3,7 @@ import logging
 import os
 import queue
 import threading
+import platform
 
 from .pipe_server import PipeServer
 
@@ -152,4 +153,6 @@ def start(path=PATH_TO_FSAC):
     @path
      Path to `fsautocomplete.exe`.
     '''
-    return FsacServer([path])
+    isWindows = platform.system() == "Windows"
+    args = [path] if isWindows else ["mono", path]
+    FsacServer(args)
