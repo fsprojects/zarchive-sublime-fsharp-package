@@ -8,7 +8,7 @@ open System.IO
 open System.IO.Compression
 open Fake 
 
-let packagesPath () = 
+let sublimePath () = 
   let UnixPaths = 
       [  (Environment.GetEnvironmentVariable("HOME") + "/Library/Application Support/Sublime Text 3")
          (Environment.GetEnvironmentVariable("HOME") + "/.config/sublime-text-3") ]
@@ -40,8 +40,11 @@ Target "Build" (fun _ ->
 )
 
 Target "Install" (fun _ ->
-    let path = packagesPath ()
-    trace path
+    let installDir = getBuildParam "sublimeDir"
+    let sublimePath = if (not  (String.IsNullOrWhiteSpace installDir)) && (Directory.Exists installDir) then installDir else sublimePath ()
+    trace sublimePath
+    let target = Path.Combine(sublimePath, "Packages/FSharp")
+    CopyRecursive "bin" target true |> ignore
 )
 
 "Clean" 
