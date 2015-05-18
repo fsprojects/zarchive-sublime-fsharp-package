@@ -37,7 +37,7 @@ The build target 'Install' will copy the built output into ST3's Packages direct
 If you're running a portable install of Sublime Text you need to tell the build script where to install: 
 
 ```shell
-./build.sh install sublimeDir="d:\AppData\ST3"
+build install sublimeDir="d:\AppData\ST3"
 ```
 
 #### General steps
