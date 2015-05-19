@@ -6,7 +6,7 @@ import threading
 import platform
 
 from .pipe_server import PipeServer
-
+from FSharp.sublime_plugin_lib.plat import is_windows
 
 PATH_TO_FSAC = os.path.join(os.path.dirname(__file__),
                             'fsac/fsautocomplete.exe')
@@ -153,6 +153,5 @@ def start(path=PATH_TO_FSAC):
     @path
      Path to `fsautocomplete.exe`.
     '''
-    isWindows = platform.system() == "Windows"
-    args = [path] if isWindows else ["mono", path]
+    args = [path] if is_windows() else ["mono", path]
     FsacServer(args)
