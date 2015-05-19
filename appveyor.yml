@@ -1,0 +1,18 @@
+environment:
+  global:
+    PACKAGE: "FSharp"
+
+  matrix:
+    - SUBLIME_TEXT_VERSION : "3"
+
+install:
+  # TODO: Use Desired state configuration or a block script.
+  - ps: start-filedownload "https://raw.githubusercontent.com/randy3k/UnitTesting/master/sbin/appveyor.ps1"
+  - ps: .\appveyor.ps1 "bootstrap" -verbose
+  - ps: remove-item -recurse -force c:\st\data\packages\$env:PACKAGE\*
+  - ps: .\build.cmd install sublimeDir=c:\st\data
+
+build: off
+
+test_script:
+  - ps: .\appveyor.ps1 "run_tests" -verbose
