@@ -3,10 +3,11 @@ import logging
 import os
 import queue
 import threading
-import platform
+
+from FSharp.sublime_plugin_lib.plat import is_windows
 
 from .pipe_server import PipeServer
-from FSharp.sublime_plugin_lib.plat import is_windows
+
 
 PATH_TO_FSAC = os.path.join(os.path.dirname(__file__),
                             'fsac/fsautocomplete.exe')
