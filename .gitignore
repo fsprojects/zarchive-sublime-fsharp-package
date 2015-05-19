@@ -2,3 +2,5 @@ packages/
 \.paket/paket.exe
 paket-files/
 bin/
+
+*.sublime-workspace
