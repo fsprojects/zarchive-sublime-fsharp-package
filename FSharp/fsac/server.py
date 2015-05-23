@@ -151,4 +151,4 @@ def start(path=PATH_TO_FSAC):
      Path to `fsautocomplete.exe`.
     '''
     args = [path] if is_windows() else ['mono', path]
-    FsacServer(args)
+    return FsacServer(args)
