@@ -44,8 +44,10 @@ class ProjectTracker (sublime_plugin.EventListener):
                 self.on_idle(view)
 
     def on_activated_async(self, view):
-        if not FSharpFile(view).is_code_file:
+        # It seems we may receive a None in some cases -- check for it.
+        if not view or not FSharpFile(view).is_code_file:
             return
+
         _logger.debug ('activated file: %s', view.file_name())
 
         with ProjectTracker.parsed_lock:
