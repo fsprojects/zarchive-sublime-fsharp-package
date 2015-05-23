@@ -10,6 +10,7 @@ import queue
 import sublime
 import sublime_plugin
 
+from FSharp.lib.tooltips import show_info_tooltip
 from FSharp.fsac.response import CompilerLocationResponse
 from FSharp.fsac.response import DeclarationsResponse
 from FSharp.fsac.response import ErrorInfo
@@ -89,15 +90,12 @@ def process_resp(data):
         return
 
     if data['Kind'] == 'ERROR':
+        sublime.status_message('FSharp - ERROR: ' + data['Data'])
         _logger.error(str(data))
         return
 
     if data['Kind'] == 'tooltip' and data['Data']:
-        v = sublime.active_window().active_view()
-        word = v.substr(v.word(v.sel()[0].b))
-        panel = OutputPanel('fs.out')
-        panel.write(data['Data'])
-        panel.show()
+        show_info_tooltip(data['Data'])
         return
 
     if data['Kind'] == 'INFO' and data['Data']:
