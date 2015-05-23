@@ -93,7 +93,7 @@ class fs_run_fsac(sublime_plugin.WindowCommand):
 
     def get_active_file_name(self):
         try:
-            fname = self.window.active_view ().file_name ()
+            fname = self.window.active_view().file_name()
         except AttributeError as e:
             return
         return fname
@@ -112,15 +112,22 @@ class fs_run_fsac(sublime_plugin.WindowCommand):
         fname = self.get_active_file_name ()
         if not fname:
             return
-        editor_context.fsac.send_request (ProjectRequest(fname))
+        editor_context.fsac.send_request(ProjectRequest(fname))
 
     def do_parse(self):
-        fname = self.get_active_file_name ()
+        fname = self.get_active_file_name()
         if not fname:
             return
-        v = self.window.active_view ()
-        content = v.substr(sublime.Region(0, v.size()))
-        editor_context.fsac.send_request(ParseRequest(fname, content=content))
+
+        try:
+            v = self.window.active_view()
+        except AttributeError:
+            return
+        else:
+            if not v:
+                return
+            content = v.substr(sublime.Region(0, v.size()))
+            editor_context.fsac.send_request(ParseRequest(fname, content=content))
 
     def do_declarations(self):
         fname = self.get_active_file_name()
@@ -132,7 +139,7 @@ class fs_run_fsac(sublime_plugin.WindowCommand):
         editor_context.fsac.send_request(CompilerLocationRequest())
 
     def do_find_decl(self):
-        fname = self.get_active_file_name ()
+        fname = self.get_active_file_name()
         if not fname:
             return
 
@@ -141,6 +148,7 @@ class fs_run_fsac(sublime_plugin.WindowCommand):
         except TypeError as e:
             return
         else:
+            self.do_parse()
             editor_context.fsac.send_request(FindDeclRequest(fname, row + 1, col))
 
     def do_completion(self):
@@ -155,19 +163,21 @@ class fs_run_fsac(sublime_plugin.WindowCommand):
         else:
             # raise first, because the event listener drains the completions queue
             raise_event(ON_COMPLETIONS_REQUESTED, {})
+            self.do_parse()
             editor_context.fsac.send_request(CompletionRequest(fname, row + 1, col))
             self.window.run_command('auto_complete')
 
     def do_tooltip(self):
-        fname = self.get_active_file_name ()
+        fname = self.get_active_file_name()
         if not fname:
             return
 
         try:
             (row, col) = self.get_insertion_point()
-        except TypeError as e:
+        except TypeError:
             return
         else:
+            self.do_parse()
             editor_context.fsac.send_request(TooltipRequest(fname, row + 1, col))
 
     def do_run_file(self):
