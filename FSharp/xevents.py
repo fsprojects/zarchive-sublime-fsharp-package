@@ -45,7 +45,7 @@ class ProjectTracker (sublime_plugin.EventListener):
 
     def on_activated_async(self, view):
         # It seems we may receive a None in some cases -- check for it.
-        if not view or not FSharpFile(view).is_code_file:
+        if not view or not view.file_name() or not FSharpFile(view).is_code:
             return
 
         _logger.debug ('activated file: %s', view.file_name())
@@ -71,9 +71,11 @@ class ProjectTracker (sublime_plugin.EventListener):
         self.set_parsed(view, True)
 
     def on_modified_async(self, view):
-        _logger.debug('modified file: %s', view.file_name())
-        if not FSharpFile(view).is_code_file:
+        if not view or not view.file_name() or not FSharpFile(view).is_code:
             return
+
+        _logger.debug('modified file: %s', view.file_name())
+
         self.add_edit(view)
         self.set_parsed(view, False)
 

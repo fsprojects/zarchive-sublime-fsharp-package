@@ -79,6 +79,9 @@ class Editor(object):
         assert isinstance(fs_file, FSharpFile), 'wrong argument: %s' % fs_file
         # todo: run in alternate thread
 
+        if fs_file.is_script_file:
+            return
+
         if not self.project_file or not self.project_file.governs(fs_file.path):
             self.project_file = FSharpProjectFile.from_path(fs_file.path)
 

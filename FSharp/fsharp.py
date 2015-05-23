@@ -123,7 +123,7 @@ class fs_run_fsac(sublime_plugin.WindowCommand):
         editor_context.fsac.send_request(ParseRequest(fname, content=content))
 
     def do_declarations(self):
-        fname = self.get_active_file_name ()
+        fname = self.get_active_file_name()
         if not fname:
             return
         editor_context.fsac.send_request(DeclarationsRequest(fname))

@@ -45,20 +45,31 @@ class FSharpFile (object):
 
     @property
     def is_code(self):
+        '''
+        Returns `True` if `self` is any sort of F# code file.
+        '''
         return (self.is_code_file or self.is_script_file)
 
     @property
     def is_code_file(self):
-        return extension_equals(self.view_or_fname, '.fs')
+        '''
+        Returns `True` if `self` is a .fs file.
+        '''
+        return extension_equals(self.path, '.fs')
 
     @property
     def is_script_file(self):
-        return (extension_equals(self.view_or_fname, '.fsx') or
-                extension_equals(self.view_or_fname, '.fsi'))
+        '''
+        Returns `True` if `self` is a .fsx/.fsi/.fsscript file.
+        '''
+        return (extension_equals(self.path, '.fsx')
+                or extension_equals(self.path, '.fsi')
+                or extension_equals(self.path, '.fsscript')
+                )
 
     @property
     def is_project_file(self):
-        return extension_equals(self.view_or_fname, '.fsproj')
+        return extension_equals(self.path, '.fsproj')
 
 
 class FSharpProjectFile (object):
