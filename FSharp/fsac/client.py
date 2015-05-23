@@ -1,11 +1,11 @@
-import threading
+import json
 import logging
 import queue
-import json
+import threading
 
+from .server import _internal_comm
 from .server import requests_queue
 from .server import responses_queue
-from .server import _internal_comm
 
 
 _logger = logging.getLogger(__name__)
@@ -33,19 +33,18 @@ def read_responses(responses, messages, resp_proc):
         except queue.Empty:
             pass
 
-    _logger.info('stopping reading responses')
+    _logger.info('stopped reading responses')
 
 
 class FsacClient(object):
-    """Client for fsac server.
+    """Client for fsautocomplete.exe server.
     """
     def __init__(self, server, resp_proc):
         self.requests = requests_queue
         self.server = server
 
         threading.Thread(target=read_responses, args=(responses_queue,
-                                                      _internal_comm,
-                                                      resp_proc)).start()
+              _internal_comm, resp_proc)).start()
 
     def stop(self):
         self.server.stop()
