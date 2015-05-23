@@ -27,6 +27,9 @@ class FSharpFile (object):
         assert view_or_fname, 'wrong arg: %s' % view_or_fname
         self.view_or_fname = view_or_fname
 
+    def __str__(self):
+        return self.path
+
     @property
     def path(self):
         try:
@@ -77,7 +80,7 @@ class FSharpProjectFile (object):
         @path
           A path to a file or directory.
         '''
-        fs_project = find_fsproject (path)
+        fs_project = find_fsproject(path)
         if not fs_project:
             return None
-        return FSharpProjectFile (fs_project)
+        return FSharpProjectFile(fs_project)
