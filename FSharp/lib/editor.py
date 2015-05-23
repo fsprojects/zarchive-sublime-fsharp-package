@@ -75,10 +75,12 @@ class Editor(object):
             return None
         return os.path.join(self.compilers_path, 'fsi.exe')
 
-    def refresh(self, fs_file):
+    def update_project_data(self, fs_file):
         assert isinstance(fs_file, FSharpFile), 'wrong argument: %s' % fs_file
         # todo: run in alternate thread
 
+        # fsautocomplete.exe doesn't link F# script files to any .fsproj file,
+        # so bail out.
         if fs_file.is_script_file:
             return
 
@@ -86,11 +88,12 @@ class Editor(object):
             self.project_file = FSharpProjectFile.from_path(fs_file.path)
 
             if not self.project_file:
-                _logger.info('could not find an .fsproject file for %s' % fs_file)
+                _logger.info('could not find a .fsproj file for %s' % fs_file)
                 return
 
+            # fsautocomplete.exe takes care of managing .fsproj files, so we
+            # can add as many as we need.
             self.set_project()
-            return
 
     def set_project(self):
         self.fsac.send_request(ProjectRequest(self.project_file.path))
@@ -99,12 +102,19 @@ class Editor(object):
         self.fsac.send_request(ParseRequest(fs_file.path, content))
 
     def parse_view(self, view):
-        # todo: what about unsaved files?
+        # FIXME: In ST, I think a file may have a .file_name() and still not
+        # exist on disk because it's been unlinked.
+        # ignore unsaved files
+        if not view.file_name():
+            return
+
         fs_file = FSharpFile(view)
+
         if not fs_file.is_fsharp_file:
             return
-        self.refresh(fs_file)
-        # todo: very inneficient
+
+        self.update_project_data(fs_file)
+        # TODO: very inneficient?
         if fs_file.is_code:
-            content = view.substr(sublime.Region (0, view.size()))
+            content = view.substr(sublime.Region(0, view.size()))
             self.parse_file(fs_file, content)

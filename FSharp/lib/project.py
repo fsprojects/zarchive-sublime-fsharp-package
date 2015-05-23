@@ -63,7 +63,6 @@ class FSharpFile (object):
         Returns `True` if `self` is a .fsx/.fsi/.fsscript file.
         '''
         return (extension_equals(self.path, '.fsx')
-                or extension_equals(self.path, '.fsi')
                 or extension_equals(self.path, '.fsscript')
                 )
 
