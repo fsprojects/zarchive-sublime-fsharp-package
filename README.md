@@ -1,9 +1,14 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/uuqaj61vyqwwxqe1/branch/master?svg=true)](https://ci.appveyor.com/project/guillermooo/sublime-fsharp-package/branch/master)
 
-## FSharp - F# Coding Tools for Sublime Text
+## FSharp
 
 This package provides support
-for F# development in Sublime Text.
+for F# development in Sublime Text 3.
+
+FSharp is only compatible
+with **Sublime Text 3**.
+
+///
 
 **FSharp is currently a preview
 and not ready for use**.
@@ -12,13 +17,12 @@ you can read on
 to learn how to set up
 a development environment.
 
+///
+
 
 ### Developing FSharp
 
-Pull requests to FSharp are welcome.
-
-FSharp is only compatible
-with **Sublime Text 3**.
+Pull requests to FSharp welcome!
 
 
 ### Building
@@ -35,6 +39,8 @@ with **Sublime Text 3**.
 build.cmd
 ```
 
+### Installing
+
 The **Install** build target
 will publish the package
 to Sublime Text's *Data* directory:
@@ -46,13 +52,13 @@ to Sublime Text's *Data* directory:
 For portable installations of Sublime Text
 (Windows only),
 you must pass along
-the target directory:
+the data directory:
 
 ```shell
 build install sublimeDir="d:\Path\To\Sublime\Text\Data"
 ```
 
-#### General steps
+#### General Steps for Development
 
 * Clone this repository to any folder outside of Sublime Text's *Data* folder
 * Edit files as needed
