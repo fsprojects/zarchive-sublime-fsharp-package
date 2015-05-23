@@ -2,13 +2,13 @@
 # All rights reserved. Use of this source code is governed by a BSD-style
 # license that can be found in the LICENSE file.)
 
-import sublime
-import sublime_plugin
-
 import json
+import logging
 import os
 import queue
-import logging
+
+import sublime
+import sublime_plugin
 
 from FSharp import editor_context
 from FSharp.fsac.request import AdHocRequest
@@ -20,20 +20,17 @@ from FSharp.fsac.request import ParseRequest
 from FSharp.fsac.request import ProjectRequest
 from FSharp.fsac.request import TooltipRequest
 from FSharp.fsac.response import CompilerLocationResponse
-from FSharp.fsac.response import CompilerLocationResponse
 from FSharp.fsac.response import DeclarationsResponse
 from FSharp.fsac.response import ErrorInfo
 from FSharp.fsac.response import ProjectResponse
+from FSharp.fsac.server import completions_queue
 from FSharp.lib.project import FSharpFile
-from FSharp.lib.project import FSharpFile
-from FSharp.lib.response_processor import process_resp
 from FSharp.lib.response_processor import add_listener
-from FSharp.lib.response_processor import raise_event
 from FSharp.lib.response_processor import ON_COMPLETIONS_REQUESTED
+from FSharp.lib.response_processor import process_resp
+from FSharp.lib.response_processor import raise_event
 from FSharp.sublime_plugin_lib.context import ContextProviderMixin
 from FSharp.sublime_plugin_lib.panels import OutputPanel
-from FSharp.sublime_plugin_lib.panels import OutputPanel
-from FSharp.fsac.server import completions_queue
 
 
 _logger = logging.getLogger(__name__)
