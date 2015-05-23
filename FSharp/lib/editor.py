@@ -2,19 +2,19 @@
 # All rights reserved. Use of this source code is governed by a BSD-style
 # license that can be found in the LICENSE file.)
 
-import sublime
-
-import logging
 import os
+import logging
+
+import sublime
 
 from FSharp.fsac import server
 from FSharp.fsac.client import FsacClient
 from FSharp.fsac.request import CompilerLocationRequest
-from FSharp.fsac.request import ProjectRequest
 from FSharp.fsac.request import ParseRequest
+from FSharp.fsac.request import ProjectRequest
+from FSharp.lib import response_processor
 from FSharp.lib.project import FSharpFile
 from FSharp.lib.project import FSharpProjectFile
-from FSharp.lib import response_processor
 from FSharp.lib.response_processor import ON_COMPILER_PATH_AVAILABLE
 
 
@@ -25,11 +25,15 @@ class Editor(object):
     """Global editor state.
     """
     def __init__(self, resp_proc):
-        _logger.info ('starting fsac server...')
+        _logger.info ('Starting F# language services...')
+
         self.fsac = FsacClient(server.start(), resp_proc)
+
         self.compilers_path = None
         self.project_file = None
-        self.fsac.send_request (CompilerLocationRequest())
+
+        self.fsac.send_request(CompilerLocationRequest())
+        # todo: register as decorator instead?
         response_processor.add_listener(ON_COMPILER_PATH_AVAILABLE,
                                         self.on_compiler_path_available)
 
@@ -39,7 +43,7 @@ class Editor(object):
     @property
     def compiler_path(self):
         if self.compilers_path is None:
-            return None
+            return
         return os.path.join(self.compilers_path, 'fsc.exe')
 
     @property
@@ -52,14 +56,13 @@ class Editor(object):
         assert isinstance(fs_file, FSharpFile), 'wrong argument: %s' % fs_file
         # todo: run in alternate thread
 
-        if not self.project_file:
+        if not self.project_file or not self.project_file.governs(fs_file.path):
             self.project_file = FSharpProjectFile.from_path(fs_file.path)
-            self.set_project()
-            return
 
-        if not self.project_file.governs(fs_file.path):
-            new_project_file = FSharpProjectFile.from_path(fs_file.path)
-            self.project_file = new_project_file
+            if not self.project_file:
+                _logger.info('could not find an .fsproject file for %s' % fs_file)
+                return
+
             self.set_project()
             return
 
@@ -79,4 +82,3 @@ class Editor(object):
         if fs_file.is_code:
             content = view.substr(sublime.Region (0, view.size()))
             self.parse_file(fs_file, content)
-
