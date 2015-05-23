@@ -12,8 +12,8 @@ import sublime_plugin
 
 from FSharp.fsac.response import CompilerLocationResponse
 from FSharp.fsac.response import DeclarationsResponse
-from FSharp.fsac.response import ProjectResponse
 from FSharp.fsac.response import ErrorInfo
+from FSharp.fsac.response import ProjectResponse
 from FSharp.sublime_plugin_lib.panels import OutputPanel
 
 
@@ -22,10 +22,12 @@ _logger = logging.getLogger(__name__)
 
 ON_COMPILER_PATH_AVAILABLE = 'OnCompilerPathAvailableEvent'
 ON_COMPLETIONS_REQUESTED = 'OnCompletionsRequestedEvent'
+ON_ERRORS_AVAILABLE = 'OnErrorsAvailableEvent'
 
 _events = {
     ON_COMPILER_PATH_AVAILABLE: [],
     ON_COMPLETIONS_REQUESTED: [],
+    ON_ERRORS_AVAILABLE: [],
 }
 
 
@@ -62,10 +64,20 @@ def process_resp(data):
 
     if data['Kind'] == 'errors':
         # todo: enable error navigation via standard keys
-        v = sublime.active_window().active_view()
-        v.erase_regions ('fs.errs')
+        try:
+            v = sublime.active_window().active_view()
+        except AttributeError:
+            return
+
+        if not v:
+            return
+
+        v.erase_regions('fs.errs')
+
+        raise_event(ON_ERRORS_AVAILABLE, {'response': data})
         if not data['Data']:
             return
+
         v.add_regions('fs.errs',
                       [ErrorInfo(e).to_region(v) for e in data['Data']],
                       'invalid.illegal',

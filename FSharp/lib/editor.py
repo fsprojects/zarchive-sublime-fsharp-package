@@ -4,6 +4,7 @@
 
 import os
 import logging
+import threading
 
 import sublime
 
@@ -16,6 +17,7 @@ from FSharp.lib import response_processor
 from FSharp.lib.project import FSharpFile
 from FSharp.lib.project import FSharpProjectFile
 from FSharp.lib.response_processor import ON_COMPILER_PATH_AVAILABLE
+from FSharp.lib.response_processor import ON_ERRORS_AVAILABLE
 
 
 _logger = logging.getLogger(__name__)
@@ -32,13 +34,34 @@ class Editor(object):
         self.compilers_path = None
         self.project_file = None
 
+        self._errors = []
+
         self.fsac.send_request(CompilerLocationRequest())
         # todo: register as decorator instead?
         response_processor.add_listener(ON_COMPILER_PATH_AVAILABLE,
                                         self.on_compiler_path_available)
 
+        response_processor.add_listener(ON_ERRORS_AVAILABLE,
+                                        self.on_errors_available)
+
+        self._write_lock = threading.Lock()
+
     def on_compiler_path_available(self, data):
         self.compilers_path = data['response'].compilers_path
+
+    def on_errors_available(self, data):
+        self.errors = data['response']['Data']
+
+    @property
+    def errors(self):
+        with self._write_lock:
+            return self._errors
+
+    @errors.setter
+    def errors(self, value):
+        assert isinstance(value, list), 'bad call'
+        with self._write_lock:
+            self._errors = value
 
     @property
     def compiler_path(self):
