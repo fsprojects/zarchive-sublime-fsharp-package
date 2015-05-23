@@ -20,11 +20,6 @@ a development environment.
 ---
 
 
-### Developing FSharp
-
-Pull requests to FSharp welcome!
-
-
 ### Building
 
 #### Linux/Mac
@@ -58,10 +53,17 @@ the data directory:
 build install sublimeDir="d:\Path\To\Sublime\Text\Data"
 ```
 
+
+### Developing FSharp
+
+Pull requests to FSharp welcome!
+
+
 #### General Steps for Development
 
 * Clone this repository to any folder outside of Sublime Text's *Data* folder
 * Edit files as needed
-* Install: `./build.[sh|cmd] install [sublimeDir=d:\Path\To\Sublime\Text\Data]`
+* Close Sublime Text
+* Install via `./build.[sh|cmd] install`
 * Restart Sublime Text
 * Run the tests via command palette: **FSharp: Test (All)**
