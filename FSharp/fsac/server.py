@@ -52,7 +52,7 @@ def request_reader(requests, server, internal_msgs=_internal_comm):
             except Exception as e:
                 _logger.error('unhandled exception: %s', e)
                 # improve stack trace
-                raise from None
+                raise
 
             if not request:
                 # Requests should always be valid, so log this but keep
@@ -67,7 +67,7 @@ def request_reader(requests, server, internal_msgs=_internal_comm):
             continue
         except Exception as e:
             _logger.error('unhandled exception: %s', e)
-            raise from None
+            raise
 
     _logger.info("request reader exiting...")
 
@@ -99,7 +99,7 @@ def response_reader(responses, server, internal_msgs=_internal_comm):
                 pass
             except Exception as e:
                 _logger.error('unhandled exception: %s', e)
-                raise from None
+                raise
 
             _logger.debug('reading response: %s', data[:140])
             # TODO: if we're decoding here, .put() the decoded data.
@@ -113,7 +113,7 @@ def response_reader(responses, server, internal_msgs=_internal_comm):
             continue
         except Exception as e:
             _logger.error('unhandled exception: %s', e)
-            raise from None
+            raise
 
     _logger.info("response reader exiting...")
 
