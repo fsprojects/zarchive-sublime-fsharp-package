@@ -8,7 +8,7 @@ for F# development in Sublime Text 3.
 FSharp is only compatible
 with **Sublime Text 3**.
 
-///
+---
 
 **FSharp is currently a preview
 and not ready for use**.
@@ -17,7 +17,7 @@ you can read on
 to learn how to set up
 a development environment.
 
-///
+---
 
 
 ### Developing FSharp
