@@ -77,14 +77,18 @@ def show_tooltip(content, view=None, location=-1, timeout=0):
             view = sublime.active_window().active_view()
         except AttributeError as e:
             return
+        else:
+            if not view:
+                return
 
     view.show_popup(content, location=location, max_width=500)
 
     if timeout > 0:
-        def hide(current_id):
-            global TOOLTIP_ID
-            if TOOLTIP_ID == current_id:
-                view.hide_popup()
-
         current_id = next(id_generator)
-        after(timeout, lambda: hide(current_id))
+        after(timeout, lambda: _hide(view, current_id))
+
+
+def _hide(view, target_tooltip_id):
+    global TOOLTIP_ID
+    if TOOLTIP_ID == target_tooltip_id:
+        view.hide_popup()
