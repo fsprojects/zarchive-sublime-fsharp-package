@@ -257,7 +257,7 @@ class fs_run_interpreter(sublime_plugin.WindowCommand):
     def run(self, fname):
         assert fname, 'bad argument'
 
-        f  = FSharpFile (fname)
+        f = FSharpFile(fname)
         if not os.path.exists(f.path):
             _logger.debug('file must be saved first: %s', f.path)
             return
