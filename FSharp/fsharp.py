@@ -44,6 +44,7 @@ class fs_dot(sublime_plugin.WindowCommand):
     '''Inserts the dot character and opens the autocomplete list.
     '''
     def run(self):
+        return
         view = self.window.active_view()
         pt = view.sel()[0].b
         view.run_command('insert', {'characters': '.'})

@@ -34,7 +34,7 @@ class ProjectTracker (sublime_plugin.EventListener):
         with ProjectTracker.edits_lock:
             view_id = view.file_name() or view.id()
             self.edits[view_id] += 1
-        after(1500, lambda: self.subtract_edit(view))
+        after(400, lambda: self.subtract_edit(view))
 
     def subtract_edit(self, view):
         with ProjectTracker.edits_lock:
@@ -69,6 +69,7 @@ class ProjectTracker (sublime_plugin.EventListener):
     def on_idle(self, view):
         editor_context.parse_view(view)
         self.set_parsed(view, True)
+        self.show_completions(view)
 
     def on_modified_async(self, view):
         if not view or not view.file_name() or not FSharpFile(view).is_code:
@@ -78,6 +79,16 @@ class ProjectTracker (sublime_plugin.EventListener):
 
         self.add_edit(view)
         self.set_parsed(view, False)
+
+    def show_completions(self, view):
+        try:
+            is_after_dot = view.substr(view.sel()[0].b - 1) == '.'
+        except IndexError:
+            return
+
+        if is_after_dot:
+            FSharpAutocomplete.WAIT_ON_COMPLETIONS = True
+            view.window().run_command('fs_run_fsac', { "cmd": "completion" })
 
 
 class ContextProvider(sublime_plugin.EventListener, ContextProviderMixin):
