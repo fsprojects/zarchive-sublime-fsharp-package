@@ -40,19 +40,6 @@ def erase_status(view, key):
     view.erase_status(key)
 
 
-class fs_dot(sublime_plugin.WindowCommand):
-    '''Inserts the dot character and opens the autocomplete list.
-    '''
-    def run(self):
-        return
-        view = self.window.active_view()
-        pt = view.sel()[0].b
-        view.run_command('insert', {'characters': '.'})
-        view.sel().clear()
-        view.sel().add(sublime.Region(pt + 1))
-        self.window.run_command('fs_run_fsac', { "cmd": "completion" })
-
-
 class fs_run_fsac(sublime_plugin.WindowCommand):
     '''Runs an fsautocomplete.exe command.
     '''
