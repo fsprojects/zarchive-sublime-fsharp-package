@@ -1,0 +1,25 @@
+os:
+    - linux
+    - osx
+
+sudo: required
+
+env:
+    global:
+        - PACKAGE="FSharp"
+    matrix:
+        - SUBLIME_TEXT_VERSION="3"
+
+before_install:
+    - curl -OL https://raw.githubusercontent.com/randy3k/UnitTesting/master/sbin/travis.sh
+
+install:
+    - sh travis.sh bootstrap
+    - rm -rf "$STP/$PACKAGE" # because UnitTesting has created this for us.
+    - ln -s "$PWD/FSharp" "$STP/$PACKAGE" # because this is the correct directory
+
+script:
+    - sh travis.sh run_tests
+
+notifications:
+    email: false
