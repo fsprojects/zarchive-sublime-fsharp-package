@@ -1,22 +1,31 @@
+language: csharp
+
 os:
     - linux
-    - osx
+    # - osx
 
 sudo: required
 
 env:
     global:
         - PACKAGE="FSharp"
+        - ST3P="$HOME/.config/sublime-text-3/Packages"
     matrix:
         - SUBLIME_TEXT_VERSION="3"
+
+mono:
+    - latest
 
 before_install:
     - curl -OL https://raw.githubusercontent.com/randy3k/UnitTesting/master/sbin/travis.sh
 
 install:
     - sh travis.sh bootstrap
-    - rm -rf "$STP/$PACKAGE" # because UnitTesting has created this for us.
-    - ln -s "$PWD/FSharp" "$STP/$PACKAGE" # because this is the correct directory
+    - rm "$ST3P/$PACKAGE" # Because UnitTesting has created this for us.
+    - ln -s "$PWD/FSharp" "$ST3P/$PACKAGE" # Because this is the correct directory.
+    - sh build.sh
+
+build: false
 
 script:
     - sh travis.sh run_tests
