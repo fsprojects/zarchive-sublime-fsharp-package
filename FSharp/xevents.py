@@ -125,7 +125,7 @@ class FSharpAutocomplete(sublime_plugin.EventListener):
     def on_query_completions(self, view, prefix, locations):
         # With this check we also exit early for non-F# files.
         if not FSharpAutocomplete.WAIT_ON_COMPLETIONS:
-            return ([], self._INHIBIT_OTHER)
+            return []
 
         try:
             return (self.fetch_completions(), self._INHIBIT_OTHER)
