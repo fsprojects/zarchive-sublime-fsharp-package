@@ -1,4 +1,4 @@
-[![Build status](https://ci.appveyor.com/api/projects/status/uuqaj61vyqwwxqe1/branch/master?svg=true)](https://ci.appveyor.com/project/guillermooo/sublime-fsharp-package/branch/master)
+[![Build status](https://ci.appveyor.com/api/projects/status/uuqaj61vyqwwxqe1/branch/master?svg=true)](https://ci.appveyor.com/project/guillermooo/sublime-fsharp-package/branch/master) [![Build Status](https://travis-ci.org/fsharp/sublime-fsharp-package.svg?branch=master)](https://travis-ci.org/fsharp/sublime-fsharp-package)
 
 ## FSharp
 
