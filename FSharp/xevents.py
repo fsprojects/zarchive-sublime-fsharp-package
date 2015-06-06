@@ -32,9 +32,14 @@ class IdleAutocomplete(IdleIntervalEventListener):
         super().__init__(*args, **kwargs)
         self.duration = 400
 
+    # FIXME: we should exclude widgets and overlays in the base class.
     def check(self, view):
-        # FIXME: we should exclude widgets and overlays in the base class.
-        return view.file_name() and FSharpFile(view).is_code
+        # Offer F# completions in F# files when the caret isn't in a string or
+        # comment. If strings or comments, offer plain Sublime Text completions.
+        return all((
+            view.file_name(),
+            not view.match_selector(view.sel()[0].b, 'string, comment'),
+            FSharpFile(view).is_code))
 
     def on_idle(self, view):
         self._show_completions(view)
@@ -120,13 +125,13 @@ class FSharpAutocomplete(sublime_plugin.EventListener):
     def on_query_completions(self, view, prefix, locations):
         # With this check we also exit early for non-F# files.
         if not FSharpAutocomplete.WAIT_ON_COMPLETIONS:
-            return []
+            return ([], self._INHIBIT_OTHER)
 
         try:
             return (self.fetch_completions(), self._INHIBIT_OTHER)
         # FIXME: Be more explicit about caught exceptions.
         except:
-            return []
+            return ([], self._INHIBIT_OTHER)
         finally:
             FSharpAutocomplete.WAIT_ON_COMPLETIONS = False
 

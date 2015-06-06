@@ -1,14 +1,13 @@
 [
-    {"keys": ["f12"], "command": "fs_run_fsac", "args": { "cmd": "finddecl"}, "context": [{ "key": "fs_is_code_file"}]},
-
-    {"keys": ["ctrl+k", "ctrl+i"], "command": "fs_run_fsac", "args": { "cmd": "tooltip" }, "context": [{ "key": "fs_is_code_file"}]},
-
 	{"keys": ["ctrl+.", "ctrl+."], "command": "fs_show_options"},
-    {"keys": ["ctrl+.", "ctrl+o"], "command": "show_panel", "args": {"panel": "output.fs.out", "toggle": true}},
-    {"keys": ["ctrl+space"], "command": "fs_run_fsac", "args": { "cmd": "completion" }, "context": [{ "key": "fs_is_code_file"}]},
 
-     // {"keys": ["."], "command": "fs_dot", "context": [
-     //        { "key": "fs_is_code_file"},
-     //        { "key": "preceding_text", "operator": "regex_contains", "operand": "\\w$"}
-     //    ]}
+	{"keys": ["ctrl+k", "ctrl+i"], "command": "fs_run_fsac", "args": { "cmd": "tooltip" }, "context": [{ "key": "fs_is_code_file"}]},
+	{"keys": ["f12"], "command": "fs_run_fsac", "args": { "cmd": "finddecl"}, "context": [{ "key": "fs_is_code_file"}]},
+	{"keys": ["ctrl+space"], "command": "fs_run_fsac", "args": { "cmd": "completion" },
+		"context": [
+			{ "key": "fs_is_code_file"},
+			{ "key": "selector", "operator": "not_equal", "operand": "string, comment"}
+	]},
+
+	{"keys": ["ctrl+.", "ctrl+o"], "command": "show_panel", "args": {"panel": "output.fs.out", "toggle": true}}
 ]
