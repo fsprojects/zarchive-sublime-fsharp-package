@@ -10,10 +10,16 @@ from FSharp.sublime_plugin_lib.sublime import after
 
 class IdleIntervalEventListener(sublime_plugin.EventListener):
     """
-    Monitors idle time and calls .on_idle() after the specified duration.
+    Base class.
+
+    Monitors view idle time and calls .on_idle() after the specified duration.
 
     Idle time is defined as time during which no calls to .on_modified[_async]()
     have been made.
+
+    Subclasses must implement .on_idle(view) and, if necessary, .check(view).
+
+    We don't provide a default implementation of .on_idle(view).
     """
 
     def __init__(self, *args, duration=500, **kwargs):
@@ -33,7 +39,7 @@ class IdleIntervalEventListener(sublime_plugin.EventListener):
         super().__init__(*args, **kwargs)
 
     @property
-    def is_subclass(self):
+    def _is_subclass(self):
         return hasattr(self, 'on_idle')
 
     def _add_edit(self, view):
@@ -48,23 +54,16 @@ class IdleIntervalEventListener(sublime_plugin.EventListener):
             if self.edits[view.id()] == 0:
                 self.on_idle(view)
 
-    # def on_idle(self, view):
-    #     """
-    #     Executes after @self.duration milliseconds have passed without a call
-    #     to .on_modified[_async]().
-    #     """
-    #     pass
-
     def on_modified_async(self, view):
         # TODO: improve check for widgets and overlays.
-        if not all((view, self.is_subclass, self.check(view))):
+        if not all((view, self._is_subclass, self.check(view))):
             return
         self._add_edit(view)
 
     # Override in derived class if needed.
     def check(self, view):
         """
-        Checks if @view should be monitored for idleness.
+        Returs `True` if @view should be monitored for idleness.
 
         @view
           The view that is about to be monitored for idleness.

@@ -63,9 +63,9 @@ class FSharpProjectTracker(sublime_plugin.EventListener):
         if not view or not view.file_name() or not FSharpFile(view).is_code:
             return
 
-        with ProjectTracker.parsed_lock:
+        with FSharpProjectTracker.parsed_lock:
             view_id = view.file_name() or view.id()
-            if ProjectTracker.parsed.get(view_id):
+            if FSharpProjectTracker.parsed.get(view_id):
                 return
 
         editor_context.parse_view(view)
@@ -75,9 +75,9 @@ class FSharpProjectTracker(sublime_plugin.EventListener):
         self.on_activated_async(view)
 
     def set_parsed(self, view, value):
-        with ProjectTracker.parsed_lock:
+        with FSharpProjectTracker.parsed_lock:
             view_id = view.file_name() or view.id()
-            ProjectTracker.parsed[view_id] = value
+            FSharpProjectTracker.parsed[view_id] = value
 
     def on_modified_async(self, view):
         if not view or not view.file_name() or not FSharpFile(view).is_code:
