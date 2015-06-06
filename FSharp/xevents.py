@@ -122,10 +122,21 @@ class FSharpAutocomplete(sublime_plugin.EventListener):
         completions = [[item, item] for item in data['Data']]
         return completions
 
+    @staticmethod
+    def _in_string_or_comment(view, locations):
+        return all((view.match_selector(loc, 'source.fsharp comment, source.fsharp string')
+            or view.match_selector(loc - 1, 'source.fsharp comment, sorce.fsharp string'))
+                for loc in locations)
+
     def on_query_completions(self, view, prefix, locations):
-        # With this check we also exit early for non-F# files.
         if not FSharpAutocomplete.WAIT_ON_COMPLETIONS:
-            return []
+            if not FSharpFile(view).is_code:
+                return []
+
+            if self._in_string_or_comment(view, locations):
+                return []
+
+            return ([], self._INHIBIT_OTHER)
 
         try:
             return (self.fetch_completions(), self._INHIBIT_OTHER)
