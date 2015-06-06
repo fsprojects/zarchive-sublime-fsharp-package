@@ -33,6 +33,7 @@ class FSharpFile (object):
     @property
     def path(self):
         try:
+            # The returned path can be None, for example, if the view is unsaved.
             return self.view_or_fname.file_name()
         except AttributeError:
             return self.view_or_fname
@@ -55,20 +56,19 @@ class FSharpFile (object):
         '''
         Returns `True` if `self` is a .fs file.
         '''
-        return extension_equals(self.path, '.fs')
+        return self.path and extension_equals(self.path, '.fs')
 
     @property
     def is_script_file(self):
         '''
         Returns `True` if `self` is a .fsx/.fsi/.fsscript file.
         '''
-        return (extension_equals(self.path, '.fsx')
-                or extension_equals(self.path, '.fsscript')
-                )
+        return self.path and (extension_equals(self.path, '.fsx')
+                or extension_equals(self.path, '.fsscript'))
 
     @property
     def is_project_file(self):
-        return extension_equals(self.path, '.fsproj')
+        return self.path and extension_equals(self.path, '.fsproj')
 
 
 class FSharpProjectFile (object):
