@@ -2,16 +2,17 @@
 # All rights reserved. Use of this source code is governed by a BSD-style
 # license that can be found in the LICENSE file.)
 
-import logging
-
 from collections import defaultdict
 import json
+import logging
+import threading
+
 import sublime
 import sublime_plugin
-import threading
 
 from FSharp.fsac.server import completions_queue
 from FSharp.fsharp import editor_context
+from FSharp.lib.events import IdleIntervalEventListener
 from FSharp.lib.project import FSharpFile
 from FSharp.lib.response_processor import add_listener
 from FSharp.lib.response_processor import ON_COMPLETIONS_REQUESTED
@@ -22,37 +23,54 @@ from FSharp.sublime_plugin_lib.sublime import after
 _logger = logging.getLogger(__name__)
 
 
-class ProjectTracker (sublime_plugin.EventListener):
-    '''Tracks events.
-    '''
-    edits = defaultdict(int)
-    edits_lock = threading.Lock()
+class IdleAutocomplete(IdleIntervalEventListener):
+    """
+    Shows the autocomplete list after @self.duration milliseconds of inactivity.
+    """
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.duration = 400
+
+    # FIXME: we should exclude widgets and overlays in the base class.
+    def check(self, view):
+        # Offer F# completions in F# files when the caret isn't in a string or
+        # comment. If strings or comments, offer plain Sublime Text completions.
+        return all((
+            view.file_name(),
+            not view.match_selector(view.sel()[0].b, 'string, comment'),
+            FSharpFile(view).is_code))
+
+    def on_idle(self, view):
+        self._show_completions(view)
+
+    def _show_completions(self, view):
+        try:
+            # TODO: We probably should show completions after other chars.
+            is_after_dot = view.substr(view.sel()[0].b - 1) == '.'
+        except IndexError:
+            return
+
+        if is_after_dot:
+            view.window().run_command('fs_run_fsac', {'cmd': 'completion'})
+
+
+class FSharpProjectTracker(sublime_plugin.EventListener):
+    """
+    Event listeners.
+    """
+
     parsed = {}
     parsed_lock = threading.Lock()
-
-    def add_edit(self, view):
-        with ProjectTracker.edits_lock:
-            view_id = view.file_name() or view.id()
-            self.edits[view_id] += 1
-        after(400, lambda: self.subtract_edit(view))
-
-    def subtract_edit(self, view):
-        with ProjectTracker.edits_lock:
-            view_id = view.file_name() or view.id()
-            self.edits[view_id] -= 1
-            if self.edits[view_id] == 0:
-                self.on_idle(view)
 
     def on_activated_async(self, view):
         # It seems we may receive a None in some cases -- check for it.
         if not view or not view.file_name() or not FSharpFile(view).is_code:
             return
 
-        _logger.debug ('activated file: %s', view.file_name())
-
-        with ProjectTracker.parsed_lock:
+        with FSharpProjectTracker.parsed_lock:
             view_id = view.file_name() or view.id()
-            if ProjectTracker.parsed.get(view_id):
+            if FSharpProjectTracker.parsed.get(view_id):
                 return
 
         editor_context.parse_view(view)
@@ -62,38 +80,22 @@ class ProjectTracker (sublime_plugin.EventListener):
         self.on_activated_async(view)
 
     def set_parsed(self, view, value):
-        with ProjectTracker.parsed_lock:
+        with FSharpProjectTracker.parsed_lock:
             view_id = view.file_name() or view.id()
-            ProjectTracker.parsed[view_id] = value
-
-    def on_idle(self, view):
-        editor_context.parse_view(view)
-        self.set_parsed(view, True)
-        self.show_completions(view)
+            FSharpProjectTracker.parsed[view_id] = value
 
     def on_modified_async(self, view):
         if not view or not view.file_name() or not FSharpFile(view).is_code:
             return
 
-        _logger.debug('modified file: %s', view.file_name())
-
-        self.add_edit(view)
         self.set_parsed(view, False)
 
-    def show_completions(self, view):
-        try:
-            is_after_dot = view.substr(view.sel()[0].b - 1) == '.'
-        except IndexError:
-            return
 
-        if is_after_dot:
-            FSharpAutocomplete.WAIT_ON_COMPLETIONS = True
-            view.window().run_command('fs_run_fsac', { "cmd": "completion" })
+class FSharpContextProvider(sublime_plugin.EventListener, ContextProviderMixin):
+    """
+    Implements contexts for .sublime-keymap files.
+    """
 
-
-class ContextProvider(sublime_plugin.EventListener, ContextProviderMixin):
-    '''Implements contexts for .sublime-keymap files.
-    '''
     def on_query_context(self, view, key, operator, operand, match_all):
         if key == 'fs_is_code_file':
             value = FSharpFile(view).is_code
@@ -101,24 +103,38 @@ class ContextProvider(sublime_plugin.EventListener, ContextProviderMixin):
 
 
 class FSharpAutocomplete(sublime_plugin.EventListener):
+    """
+    Provides completion suggestions from fsautocomplete.
+    """
+
     WAIT_ON_COMPLETIONS = False
+    _INHIBIT_OTHER = (sublime.INHIBIT_WORD_COMPLETIONS |
+               sublime.INHIBIT_EXPLICIT_COMPLETIONS)
 
     @staticmethod
     def on_completions_requested(data):
         FSharpAutocomplete.WAIT_ON_COMPLETIONS = True
 
+    @staticmethod
+    def fetch_completions():
+        data = completions_queue.get(block=True, timeout=.75)
+        data = json.loads(data.decode('utf-8'))
+        completions = [[item, item] for item in data['Data']]
+        return completions
+
     def on_query_completions(self, view, prefix, locations):
+        # With this check we also exit early for non-F# files.
         if not FSharpAutocomplete.WAIT_ON_COMPLETIONS:
-            return []
+            return ([], self._INHIBIT_OTHER)
 
         try:
-            data = completions_queue.get(block=True, timeout=.75)
-            data = json.loads(data.decode('utf-8'))
-            return [[item, item] for item in data['Data']]
+            return (self.fetch_completions(), self._INHIBIT_OTHER)
+        # FIXME: Be more explicit about caught exceptions.
         except:
-            return []
+            return ([], self._INHIBIT_OTHER)
         finally:
             FSharpAutocomplete.WAIT_ON_COMPLETIONS = False
 
 
+# TODO: make decorator?
 add_listener(ON_COMPLETIONS_REQUESTED, FSharpAutocomplete.on_completions_requested)
