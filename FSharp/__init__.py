@@ -17,7 +17,7 @@ logger = logging.getLogger('FSharp')
 logger.setLevel(logging.ERROR)
 
 handler = logging.handlers.RotatingFileHandler(LOGGER_PATH, 'a', 2**13)
-handler.setLevel(logging.DEBUG)
+handler.setLevel(logging.ERROR)
 formatter = logging.Formatter(fmt='%(asctime)s - %(name)s:%(levelname)s: %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
 handler.setFormatter(formatter)
 
