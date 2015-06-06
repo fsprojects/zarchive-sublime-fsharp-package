@@ -2,18 +2,18 @@
 # All rights reserved. Use of this source code is governed by a BSD-style
 # license that can be found in the LICENSE file.)
 
-import logging
-
 from collections import defaultdict
 import json
+import logging
+import threading
+
 import sublime
 import sublime_plugin
-import threading
 
 from FSharp.fsac.server import completions_queue
 from FSharp.fsharp import editor_context
-from FSharp.lib.project import FSharpFile
 from FSharp.lib.events import IdleIntervalEventListener
+from FSharp.lib.project import FSharpFile
 from FSharp.lib.response_processor import add_listener
 from FSharp.lib.response_processor import ON_COMPLETIONS_REQUESTED
 from FSharp.sublime_plugin_lib.context import ContextProviderMixin
@@ -37,22 +37,24 @@ class IdleAutocomplete(IdleIntervalEventListener):
         return view.file_name() and FSharpFile(view).is_code
 
     def on_idle(self, view):
-        editor_context.parse_view(view)
         self._show_completions(view)
 
     def _show_completions(self, view):
         try:
+            # TODO: We probably should show completions after other chars.
             is_after_dot = view.substr(view.sel()[0].b - 1) == '.'
         except IndexError:
             return
 
         if is_after_dot:
-            view.window().run_command('fs_run_fsac', { "cmd": "completion" })
+            view.window().run_command('fs_run_fsac', {'cmd': 'completion'})
 
 
-class ProjectTracker(sublime_plugin.EventListener):
-    '''Tracks events.
-    '''
+class FSharpProjectTracker(sublime_plugin.EventListener):
+    """
+    Event listeners.
+    """
+
     parsed = {}
     parsed_lock = threading.Lock()
 
@@ -60,8 +62,6 @@ class ProjectTracker(sublime_plugin.EventListener):
         # It seems we may receive a None in some cases -- check for it.
         if not view or not view.file_name() or not FSharpFile(view).is_code:
             return
-
-        _logger.debug ('activated file: %s', view.file_name())
 
         with ProjectTracker.parsed_lock:
             view_id = view.file_name() or view.id()
@@ -83,14 +83,14 @@ class ProjectTracker(sublime_plugin.EventListener):
         if not view or not view.file_name() or not FSharpFile(view).is_code:
             return
 
-        _logger.debug('modified file: %s', view.file_name())
-
         self.set_parsed(view, False)
 
 
-class ContextProvider(sublime_plugin.EventListener, ContextProviderMixin):
-    '''Implements contexts for .sublime-keymap files.
-    '''
+class FSharpContextProvider(sublime_plugin.EventListener, ContextProviderMixin):
+    """
+    Implements contexts for .sublime-keymap files.
+    """
+
     def on_query_context(self, view, key, operator, operand, match_all):
         if key == 'fs_is_code_file':
             value = FSharpFile(view).is_code
@@ -98,26 +98,38 @@ class ContextProvider(sublime_plugin.EventListener, ContextProviderMixin):
 
 
 class FSharpAutocomplete(sublime_plugin.EventListener):
+    """
+    Provides completion suggestions from fsautocomplete.
+    """
+
     WAIT_ON_COMPLETIONS = False
+    _INHIBIT_OTHER = (sublime.INHIBIT_WORD_COMPLETIONS |
+               sublime.INHIBIT_EXPLICIT_COMPLETIONS)
 
     @staticmethod
     def on_completions_requested(data):
         FSharpAutocomplete.WAIT_ON_COMPLETIONS = True
 
+    @staticmethod
+    def fetch_completions():
+        data = completions_queue.get(block=True, timeout=.75)
+        data = json.loads(data.decode('utf-8'))
+        completions = [[item, item] for item in data['Data']]
+        return completions
+
     def on_query_completions(self, view, prefix, locations):
+        # With this check we also exit early for non-F# files.
         if not FSharpAutocomplete.WAIT_ON_COMPLETIONS:
             return []
 
         try:
-            data = completions_queue.get(block=True, timeout=.75)
-            data = json.loads(data.decode('utf-8'))
-            return ([[item, item] for item in data['Data']],
-                        sublime.INHIBIT_WORD_COMPLETIONS |
-                        sublime.INHIBIT_EXPLICIT_COMPLETIONS)
+            return (self.fetch_completions(), self._INHIBIT_OTHER)
+        # FIXME: Be more explicit about caught exceptions.
         except:
             return []
         finally:
             FSharpAutocomplete.WAIT_ON_COMPLETIONS = False
 
 
+# TODO: make decorator?
 add_listener(ON_COMPLETIONS_REQUESTED, FSharpAutocomplete.on_completions_requested)
