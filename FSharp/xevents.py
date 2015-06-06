@@ -23,9 +23,9 @@ from FSharp.sublime_plugin_lib.sublime import after
 _logger = logging.getLogger(__name__)
 
 
-class AutocompleteWhenIdleEventListener(IdleIntervalEventListener):
+class IdleAutocomplete(IdleIntervalEventListener):
     """
-    Shows the autocomplete list after @self.duration milliseconds.
+    Shows the autocomplete list after @self.duration milliseconds of inactivity.
     """
 
     def __init__(self, *args, **kwargs):
@@ -111,7 +111,9 @@ class FSharpAutocomplete(sublime_plugin.EventListener):
         try:
             data = completions_queue.get(block=True, timeout=.75)
             data = json.loads(data.decode('utf-8'))
-            return [[item, item] for item in data['Data']]
+            return ([[item, item] for item in data['Data']],
+                        sublime.INHIBIT_WORD_COMPLETIONS |
+                        sublime.INHIBIT_EXPLICIT_COMPLETIONS)
         except:
             return []
         finally:
