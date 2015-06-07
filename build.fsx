@@ -6,6 +6,8 @@ open System.IO
 open Fake
 open Fake.Git
 
+let releaseRepo = "https://github.com/guillermooo/sublime-fsharp-package-releases.git"
+
 let sublimePath () =
   let UnixPaths =
       [  (Environment.GetEnvironmentVariable("HOME") + "/Library/Application Support/Sublime Text 3")
@@ -48,15 +50,16 @@ Target "Install" (fun _ ->
 Target "Release" (fun _ ->
     let tag = getBuildParam "tag"
     CreateDir "release"
-    Repository.clone "release" "https://github.com/guillermooo/sublime-fsharp-package-releases.git" "."
+    Repository.clone "release" releaseRepo "."
     Repository.fullclean "release"
     CopyRecursive "bin" "release" true |> ignore
     DeleteDirs ["release/tests"]
     DeleteFile "release/test_runner.py"
-    // CommandHelper.gitCommand "release" "add --all ."
-    // CommandHelper.gitCommand "release" "commit -m " (sprintf "\"new version %s\"" tag)
-    // CommandHelper.gitCommand "release" ("tag " + tag)
-    // CommandHelper.gitCommand "release" "push origin master --tags"
+    StageAll "release"
+    Commit "release" (sprintf "new version %s" tag)
+    Branches.tag "release" tag
+    Branches.push "release"
+    Branches.pushTag "release" releaseRepo tag
 )
 
 "Clean"
