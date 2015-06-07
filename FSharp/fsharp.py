@@ -10,7 +10,7 @@ import queue
 import sublime
 import sublime_plugin
 
-from FSharp import editor_context
+from FSharp._init_ import editor_context
 from FSharp.fsac.request import AdHocRequest
 from FSharp.fsac.request import CompletionRequest
 from FSharp.fsac.request import DataRequest
