@@ -56,7 +56,7 @@ Target "Release" (fun _ ->
     DeleteDirs ["release/tests"]
     DeleteFile "release/test_runner.py"
     StageAll "release"
-    Commit "release" (sprintf "\"new version %s\"" tag)
+    Commit "release" (sprintf "new version %s" tag)
     Branches.tag "release" tag
     Branches.push "release"
     Branches.pushTag "release" releaseRepo tag
