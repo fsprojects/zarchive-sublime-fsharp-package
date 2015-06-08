@@ -8,17 +8,21 @@ from FSharp.sublime_plugin_lib.path import find_file_by_extension
 from FSharp.sublime_plugin_lib.path import extension_equals
 
 
-def find_fsproject (start):
-    '''Find a .fsproject file starting at @start path.
+def find_fsproject(start):
+    """
+    Find a .fsproject file starting at @start path.
 
     Returns the path to the file or `None` if not found.
-    '''
+    """
+
     return find_file_by_extension(start, 'fsproj')
 
 
-class FSharpFile (object):
-    '''Inspects a file for interesting properties from the plugin's POV.
-    '''
+class FileInfo(object):
+    """
+    Inspects a file for interesting properties from the plugin's POV.
+    """
+
     def __init__(self, view_or_fname):
         """
         @view_or_fname
@@ -40,26 +44,26 @@ class FSharpFile (object):
 
     @property
     def is_fsharp_file(self):
-        return any((self.is_code_file,
-                   self.is_script_file,
-                   self.is_project_file))
+        return any((self.is_fsharp_code_file,
+                   self.is_fsharp_script_file,
+                   self.is_fsharp_project_file))
 
     @property
-    def is_code(self):
+    def is_fsharp_code(self):
         '''
         Returns `True` if `self` is any sort of F# code file.
         '''
-        return (self.is_code_file or self.is_script_file)
+        return (self.is_fsharp_code_file or self.is_fsharp_script_file)
 
     @property
-    def is_code_file(self):
+    def is_fsharp_code_file(self):
         '''
         Returns `True` if `self` is a .fs file.
         '''
         return self.path and extension_equals(self.path, '.fs')
 
     @property
-    def is_script_file(self):
+    def is_fsharp_script_file(self):
         '''
         Returns `True` if `self` is a .fsx/.fsi/.fsscript file.
         '''
@@ -67,15 +71,15 @@ class FSharpFile (object):
                 or extension_equals(self.path, '.fsscript'))
 
     @property
-    def is_project_file(self):
+    def is_fsharp_project_file(self):
         return self.path and extension_equals(self.path, '.fsproj')
 
 
-class FSharpProjectFile (object):
+class FSharpProjectFile(object):
     def __init__(self, path):
-        assert path.endswith('fsproj'), 'wrong fsproject path: %s' % path
+        assert path.endswith('.fsproj'), 'wrong fsproject path: %s' % path
         self.path = path
-        self.parent = os.path.dirname (self.path)
+        self.parent = os.path.dirname(self.path)
 
     def __eq__(self, other):
         # todo: improve comparison

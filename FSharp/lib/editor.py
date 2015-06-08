@@ -14,7 +14,7 @@ from FSharp.fsac.request import CompilerLocationRequest
 from FSharp.fsac.request import ParseRequest
 from FSharp.fsac.request import ProjectRequest
 from FSharp.lib import response_processor
-from FSharp.lib.project import FSharpFile
+from FSharp.lib.project import FileInfo
 from FSharp.lib.project import FSharpProjectFile
 from FSharp.lib.response_processor import ON_COMPILER_PATH_AVAILABLE
 from FSharp.lib.response_processor import ON_ERRORS_AVAILABLE
@@ -76,12 +76,12 @@ class Editor(object):
         return os.path.join(self.compilers_path, 'fsi.exe')
 
     def update_project_data(self, fs_file):
-        assert isinstance(fs_file, FSharpFile), 'wrong argument: %s' % fs_file
+        assert isinstance(fs_file, FileInfo), 'wrong argument: %s' % fs_file
         # todo: run in alternate thread
 
         # fsautocomplete.exe doesn't link F# script files to any .fsproj file,
         # so bail out.
-        if fs_file.is_script_file:
+        if fs_file.is_fsharp_script_file:
             return
 
         if not self.project_file or not self.project_file.governs(fs_file.path):
@@ -108,13 +108,13 @@ class Editor(object):
         if not view.file_name():
             return
 
-        fs_file = FSharpFile(view)
+        fs_file = FileInfo(view)
 
         if not fs_file.is_fsharp_file:
             return
 
         self.update_project_data(fs_file)
         # TODO: very inneficient?
-        if fs_file.is_code:
+        if fs_file.is_fsharp_code:
             content = view.substr(sublime.Region(0, view.size()))
             self.parse_file(fs_file, content)
