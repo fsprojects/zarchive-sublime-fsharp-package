@@ -8,6 +8,17 @@ is only compatible
 with **Sublime Text 3**.
 
 
+## Features
+
+- Autocompletion
+- Live error checking
+- Tooltips
+- Go to declaration
+- Show definitions in current file
+- Syntax highligting
+- Runs F# scripts in output panel
+
+
 ## Building
 
 
