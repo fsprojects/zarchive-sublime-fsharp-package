@@ -39,7 +39,7 @@ to Sublime Text's *Data* directory.
 ```
 
 
-## Windows
+#### Windows
 
 ```shell
 build.cmd install
