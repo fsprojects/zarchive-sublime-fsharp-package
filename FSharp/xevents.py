@@ -38,7 +38,7 @@ class IdleAutocomplete(IdleIntervalEventListener):
         # comment. If strings or comments, offer plain Sublime Text completions.
         return all((
             view.file_name(),
-            not view.match_selector(view.sel()[0].b, 'string, comment'),
+            not view.match_selector(view.sel()[0].b, 'source.fsharp string, source.fsharp comment'),
             FSharpFile(view).is_code))
 
     def on_idle(self, view):
