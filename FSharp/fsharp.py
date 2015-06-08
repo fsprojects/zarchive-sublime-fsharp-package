@@ -2,15 +2,15 @@
 # All rights reserved. Use of this source code is governed by a BSD-style
 # license that can be found in the LICENSE file.)
 
+import json
+import logging
+import os
+import queue
+
 import sublime
 import sublime_plugin
 
-import json
-import os
-import queue
-import logging
-
-from FSharp import editor_context
+from FSharp._init_ import editor_context
 from FSharp.fsac.request import AdHocRequest
 from FSharp.fsac.request import CompletionRequest
 from FSharp.fsac.request import DataRequest
@@ -20,20 +20,17 @@ from FSharp.fsac.request import ParseRequest
 from FSharp.fsac.request import ProjectRequest
 from FSharp.fsac.request import TooltipRequest
 from FSharp.fsac.response import CompilerLocationResponse
-from FSharp.fsac.response import CompilerLocationResponse
 from FSharp.fsac.response import DeclarationsResponse
 from FSharp.fsac.response import ErrorInfo
 from FSharp.fsac.response import ProjectResponse
-from FSharp.lib.project import FSharpFile
-from FSharp.lib.project import FSharpFile
-from FSharp.lib.response_processor import process_resp
+from FSharp.fsac.server import completions_queue
+from FSharp.lib.project import FileInfo
 from FSharp.lib.response_processor import add_listener
-from FSharp.lib.response_processor import raise_event
 from FSharp.lib.response_processor import ON_COMPLETIONS_REQUESTED
+from FSharp.lib.response_processor import process_resp
+from FSharp.lib.response_processor import raise_event
 from FSharp.sublime_plugin_lib.context import ContextProviderMixin
 from FSharp.sublime_plugin_lib.panels import OutputPanel
-from FSharp.sublime_plugin_lib.panels import OutputPanel
-from FSharp.fsac.server import completions_queue
 
 
 _logger = logging.getLogger(__name__)
@@ -41,18 +38,6 @@ _logger = logging.getLogger(__name__)
 
 def erase_status(view, key):
     view.erase_status(key)
-
-
-class fs_dot(sublime_plugin.WindowCommand):
-    '''Inserts the dot character and opens the autocomplete list.
-    '''
-    def run(self):
-        view = self.window.active_view()
-        pt = view.sel()[0].b
-        view.run_command('insert', {'characters': '.'})
-        view.sel().clear()
-        view.sel().add(sublime.Region(pt + 1))
-        self.window.run_command('fs_run_fsac', { "cmd": "completion" })
 
 
 class fs_run_fsac(sublime_plugin.WindowCommand):
@@ -96,7 +81,7 @@ class fs_run_fsac(sublime_plugin.WindowCommand):
 
     def get_active_file_name(self):
         try:
-            fname = self.window.active_view ().file_name ()
+            fname = self.window.active_view().file_name()
         except AttributeError as e:
             return
         return fname
@@ -115,18 +100,25 @@ class fs_run_fsac(sublime_plugin.WindowCommand):
         fname = self.get_active_file_name ()
         if not fname:
             return
-        editor_context.fsac.send_request (ProjectRequest(fname))
+        editor_context.fsac.send_request(ProjectRequest(fname))
 
     def do_parse(self):
-        fname = self.get_active_file_name ()
+        fname = self.get_active_file_name()
         if not fname:
             return
-        v = self.window.active_view ()
-        content = v.substr(sublime.Region(0, v.size()))
-        editor_context.fsac.send_request(ParseRequest(fname, content=content))
+
+        try:
+            v = self.window.active_view()
+        except AttributeError:
+            return
+        else:
+            if not v:
+                return
+            content = v.substr(sublime.Region(0, v.size()))
+            editor_context.fsac.send_request(ParseRequest(fname, content=content))
 
     def do_declarations(self):
-        fname = self.get_active_file_name ()
+        fname = self.get_active_file_name()
         if not fname:
             return
         editor_context.fsac.send_request(DeclarationsRequest(fname))
@@ -135,7 +127,7 @@ class fs_run_fsac(sublime_plugin.WindowCommand):
         editor_context.fsac.send_request(CompilerLocationRequest())
 
     def do_find_decl(self):
-        fname = self.get_active_file_name ()
+        fname = self.get_active_file_name()
         if not fname:
             return
 
@@ -144,6 +136,7 @@ class fs_run_fsac(sublime_plugin.WindowCommand):
         except TypeError as e:
             return
         else:
+            self.do_parse()
             editor_context.fsac.send_request(FindDeclRequest(fname, row + 1, col))
 
     def do_completion(self):
@@ -158,19 +151,21 @@ class fs_run_fsac(sublime_plugin.WindowCommand):
         else:
             # raise first, because the event listener drains the completions queue
             raise_event(ON_COMPLETIONS_REQUESTED, {})
+            self.do_parse()
             editor_context.fsac.send_request(CompletionRequest(fname, row + 1, col))
             self.window.run_command('auto_complete')
 
     def do_tooltip(self):
-        fname = self.get_active_file_name ()
+        fname = self.get_active_file_name()
         if not fname:
             return
 
         try:
             (row, col) = self.get_insertion_point()
-        except TypeError as e:
+        except TypeError:
             return
         else:
+            self.do_parse()
             editor_context.fsac.send_request(TooltipRequest(fname, row + 1, col))
 
     def do_run_file(self):
@@ -250,12 +245,12 @@ class fs_run_interpreter(sublime_plugin.WindowCommand):
     def run(self, fname):
         assert fname, 'bad argument'
 
-        f  = FSharpFile (fname)
+        f = FileInfo(fname)
         if not os.path.exists(f.path):
             _logger.debug('file must be saved first: %s', f.path)
             return
 
-        if not f.is_script_file:
+        if not f.is_fsharp_script_file:
             _logger.debug('not a script file: %s', f.path)
             return
 

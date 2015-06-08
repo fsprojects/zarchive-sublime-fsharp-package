@@ -14,7 +14,7 @@ PATH_TO_FSAC = os.path.join(os.path.dirname(__file__),
 
 # Incoming requests from client (plugin).
 requests_queue = queue.Queue()
-# Outogoing responses from FsacServer.
+# Outgoing responses from FsacServer.
 responses_queue = queue.Queue()
 # Special response queue for completions.
 # Completions don't ever hit the regular `responses_queue`.
@@ -33,14 +33,16 @@ def request_reader(requests, server, internal_msgs=_internal_comm):
     @requests
       A queue of requests.
     @server
-      `PipeServer` instance wrapping `fsautocomplete.exe`.
+      `FsacServer` instance.
+    @internal_msgs
+      A queue of internal messages for orchestration.
     '''
     while True:
         try:
-            req = requests.get(block=True, timeout=5)
+            request = requests.get(block=True, timeout=5)
 
             try:
-                # Check internal messages and see if we need to do anything.
+                # have we been asked to do anything?
                 if internal_msgs.get(block=False) == STOP_SIGNAL:
                     _logger.info('asked to exit; complying')
                     internal_msgs.put(STOP_SIGNAL)
@@ -49,30 +51,25 @@ def request_reader(requests, server, internal_msgs=_internal_comm):
                 pass
             except Exception as e:
                 _logger.error('unhandled exception: %s', e)
-                print('*' * 80)
-                print('unhandled exception', e)
-                print('*' * 80)
+                # improve stack trace
                 raise
 
-            if not req:
+            if not request:
                 # Requests should always be valid, so log this but keep
                 # running; most likely it isn't pathological.
-                _logger.error('unexpected empty request: %s', req)
+                _logger.error('unexpected empty request: %s', request)
                 continue
 
-            _logger.debug('reading request: %s', req[:140])
-            server.fsac.proc.stdin.write(req)
+            _logger.debug('reading request: %s', request[:140])
+            server.fsac.proc.stdin.write(request)
             server.fsac.proc.stdin.flush()
         except queue.Empty:
             continue
         except Exception as e:
             _logger.error('unhandled exception: %s', e)
-            print('*' * 80)
-            print('unhandled exception', e)
-            print('*' * 80)
             raise
 
-    _logger.debug("request reader exiting...")
+    _logger.info("request reader exiting...")
 
 
 def response_reader(responses, server, internal_msgs=_internal_comm):
@@ -82,6 +79,8 @@ def response_reader(responses, server, internal_msgs=_internal_comm):
       A queue of responses.
     @server
       `PipeServer` instance wrapping `fsautocomplete.exe`.
+    @internal_msgs
+      A queue of internal messages for orchestration.
     '''
     while True:
         try:
@@ -91,7 +90,7 @@ def response_reader(responses, server, internal_msgs=_internal_comm):
                 break
 
             try:
-                # Check internal messages and see if we need to do anything.
+                # Have we been asked to do anything?
                 if internal_msgs.get(block=False) == STOP_SIGNAL:
                     print('asked to exit; complying')
                     internal_msgs.put(STOP_SIGNAL)
@@ -100,9 +99,6 @@ def response_reader(responses, server, internal_msgs=_internal_comm):
                 pass
             except Exception as e:
                 _logger.error('unhandled exception: %s', e)
-                print('*' * 80)
-                print('unhandled exception', e)
-                print('*' * 80)
                 raise
 
             _logger.debug('reading response: %s', data[:140])
@@ -117,29 +113,29 @@ def response_reader(responses, server, internal_msgs=_internal_comm):
             continue
         except Exception as e:
             _logger.error('unhandled exception: %s', e)
-            print('*' * 80)
-            print('unhandled exception', e)
-            print('*' * 80)
             raise
 
-    print("response reader exiting")
+    _logger.info("response reader exiting...")
 
 
 class FsacServer(object):
     '''Wraps `fsautocomplete.exe`.
     '''
     def __init__(self, cmd):
+        '''
+        @cmd
+          A command line as a list to start fsautocomplete.exe.
+        '''
         fsac = PipeServer(cmd)
         fsac.start()
         fsac.proc.stdin.write('outputmode json\n'.encode('ascii'))
+        fsac.proc.stdin.flush()
         self.fsac = fsac
 
-        threading.Thread(target=request_reader,
-                         args=(requests_queue, self,)
-                         ).start()
-        threading.Thread(target=response_reader,
-                         args=(responses_queue, self,)
-                         ).start()
+        threading.Thread(
+                target=request_reader, args=(requests_queue, self)).start()
+        threading.Thread(
+                target=response_reader, args=(responses_queue, self)).start()
 
     def stop(self):
         self._internal_comm.put(STOP_SIGNAL)
@@ -154,5 +150,5 @@ def start(path=PATH_TO_FSAC):
     @path
      Path to `fsautocomplete.exe`.
     '''
-    args = [path] if is_windows() else ["mono", path]
-    FsacServer(args)
+    args = [path] if is_windows() else ['mono', path]
+    return FsacServer(args)

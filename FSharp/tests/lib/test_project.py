@@ -8,7 +8,7 @@ import unittest
 import sublime
 
 from FSharp.lib.project import find_fsproject
-from FSharp.lib.project import FSharpFile
+from FSharp.lib.project import FileInfo
 from FSharp.lib.project import FSharpProjectFile
 from FSharp.sublime_plugin_lib.io import touch
 
@@ -81,8 +81,8 @@ class Test_FSharpFile (unittest.TestCase):
             touch (f)
             v = self.win.open_file(f)
             time.sleep(0.01)
-            fs_file = FSharpFile (v)
-            self.assertTrue (fs_file.is_code_file)
+            fs_file = FileInfo (v)
+            self.assertTrue (fs_file.is_fsharp_code_file)
 
     def testCanDetectScriptFile(self):
         with tempfile.TemporaryDirectory () as tmp:
@@ -90,8 +90,8 @@ class Test_FSharpFile (unittest.TestCase):
             touch (f)
             v = self.win.open_file(f)
             time.sleep(0.01)
-            fs_file = FSharpFile (v)
-            self.assertTrue (fs_file.is_script_file)
+            fs_file = FileInfo (v)
+            self.assertTrue (fs_file.is_fsharp_script_file)
 
     def testCanDetectCodeForCodeFile(self):
         with tempfile.TemporaryDirectory () as tmp:
@@ -99,8 +99,8 @@ class Test_FSharpFile (unittest.TestCase):
             touch (f)
             v = self.win.open_file(f)
             time.sleep(0.01)
-            fs_file = FSharpFile (v)
-            self.assertTrue (fs_file.is_code)
+            fs_file = FileInfo (v)
+            self.assertTrue (fs_file.is_fsharp_code)
 
     def testCanDetectCodeForScriptFile(self):
         with tempfile.TemporaryDirectory () as tmp:
@@ -108,8 +108,8 @@ class Test_FSharpFile (unittest.TestCase):
             touch (f)
             v = self.win.open_file(f)
             time.sleep(0.01)
-            fs_file = FSharpFile (v)
-            self.assertTrue (fs_file.is_code)
+            fs_file = FileInfo (v)
+            self.assertTrue (fs_file.is_fsharp_code)
 
     def testCanDetectProjectFile(self):
         with tempfile.TemporaryDirectory () as tmp:
@@ -117,5 +117,5 @@ class Test_FSharpFile (unittest.TestCase):
             touch (f)
             v = self.win.open_file(f)
             time.sleep(0.01)
-            fs_file = FSharpFile (v)
-            self.assertTrue (fs_file.is_project_file)
+            fs_file = FileInfo (v)
+            self.assertTrue (fs_file.is_fsharp_project_file)

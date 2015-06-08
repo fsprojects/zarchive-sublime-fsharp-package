@@ -6,12 +6,12 @@
 console windows under Windows and other housekeeping.
 '''
 
-import subprocess
+from contextlib import contextmanager
 from subprocess import PIPE
 from subprocess import Popen
 import os
+import subprocess
 import threading
-from contextlib import contextmanager
 
 
 @contextmanager
@@ -72,10 +72,10 @@ class PipeServer(object):
             with pushd(working_dir):
                 # _logger.debug('starting PipeServer with args: %s', self.args)
                 self.proc = Popen(self.args,
-                                        stdout=PIPE,
-                                        stdin=PIPE,
-                                        stderr=PIPE,
-                                        startupinfo=supress_window())
+                                stdout=PIPE,
+                                stdin=PIPE,
+                                stderr=PIPE,
+                                startupinfo=supress_window())
 
     def stop(self):
         # _logger.debug('stopping PipeServer...')
