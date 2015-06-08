@@ -49,6 +49,8 @@ Target "Install" (fun _ ->
 
 Target "Release" (fun _ ->
     let tag = getBuildParam "tag"
+    if String.IsNullOrEmpty (tag) then
+        failwith "please provide a tag"
     CreateDir "release"
     Repository.clone "release" releaseRepo "."
     Repository.fullclean "release"
@@ -60,6 +62,8 @@ Target "Release" (fun _ ->
     Branches.tag "release" tag
     Branches.push "release"
     Branches.pushTag "release" releaseRepo tag
+    Branches.tag "." tag
+    Branches.pushTag "." "origin" tag
 )
 
 "Clean"
