@@ -24,7 +24,7 @@ from FSharp.fsac.response import DeclarationsResponse
 from FSharp.fsac.response import ErrorInfo
 from FSharp.fsac.response import ProjectResponse
 from FSharp.fsac.server import completions_queue
-from FSharp.lib.project import FSharpFile
+from FSharp.lib.project import FileInfo
 from FSharp.lib.response_processor import add_listener
 from FSharp.lib.response_processor import ON_COMPLETIONS_REQUESTED
 from FSharp.lib.response_processor import process_resp
@@ -245,12 +245,12 @@ class fs_run_interpreter(sublime_plugin.WindowCommand):
     def run(self, fname):
         assert fname, 'bad argument'
 
-        f = FSharpFile(fname)
+        f = FileInfo(fname)
         if not os.path.exists(f.path):
             _logger.debug('file must be saved first: %s', f.path)
             return
 
-        if not f.is_script_file:
+        if not f.is_fsharp_script_file:
             _logger.debug('not a script file: %s', f.path)
             return
 

@@ -13,7 +13,7 @@ import sublime_plugin
 from FSharp.fsac.server import completions_queue
 from FSharp.fsharp import editor_context
 from FSharp.lib.events import IdleIntervalEventListener
-from FSharp.lib.project import FSharpFile
+from FSharp.lib.project import FileInfo
 from FSharp.lib.response_processor import add_listener
 from FSharp.lib.response_processor import ON_COMPLETIONS_REQUESTED
 from FSharp.sublime_plugin_lib.context import ContextProviderMixin
@@ -39,7 +39,7 @@ class IdleAutocomplete(IdleIntervalEventListener):
         return all((
             view.file_name(),
             not view.match_selector(view.sel()[0].b, 'source.fsharp string, source.fsharp comment'),
-            FSharpFile(view).is_code))
+            FileInfo(view).is_fsharp_code))
 
     def on_idle(self, view):
         self._show_completions(view)
@@ -65,7 +65,7 @@ class FSharpProjectTracker(sublime_plugin.EventListener):
 
     def on_activated_async(self, view):
         # It seems we may receive a None in some cases -- check for it.
-        if not view or not view.file_name() or not FSharpFile(view).is_code:
+        if not view or not view.file_name() or not FileInfo(view).is_fsharp_code:
             return
 
         with FSharpProjectTracker.parsed_lock:
@@ -85,7 +85,7 @@ class FSharpProjectTracker(sublime_plugin.EventListener):
             FSharpProjectTracker.parsed[view_id] = value
 
     def on_modified_async(self, view):
-        if not view or not view.file_name() or not FSharpFile(view).is_code:
+        if not view or not view.file_name() or not FileInfo(view).is_fsharp_code:
             return
 
         self.set_parsed(view, False)
@@ -98,7 +98,7 @@ class FSharpContextProvider(sublime_plugin.EventListener, ContextProviderMixin):
 
     def on_query_context(self, view, key, operator, operand, match_all):
         if key == 'fs_is_code_file':
-            value = FSharpFile(view).is_code
+            value = FileInfo(view).is_fsharp_code
             return self._check(value, operator, operand, match_all)
 
 
@@ -130,7 +130,7 @@ class FSharpAutocomplete(sublime_plugin.EventListener):
 
     def on_query_completions(self, view, prefix, locations):
         if not FSharpAutocomplete.WAIT_ON_COMPLETIONS:
-            if not FSharpFile(view).is_code:
+            if not FileInfo(view).is_fsharp_code:
                 return []
 
             if self._in_string_or_comment(view, locations):
