@@ -14,7 +14,8 @@ let sublimePath () =
          (Environment.GetEnvironmentVariable("HOME") + "/.config/sublime-text-3") ]
 
   let WindowsPaths =
-      [ Environment.ExpandEnvironmentVariables(@"%APPDATA%\Sublime Text 3") ]
+      [  Environment.GetEnvironmentVariable("SUBLIME_TEXT_DATA")
+         Environment.ExpandEnvironmentVariables(@"%APPDATA%\Sublime Text 3") ]
 
   let isWindows = (Path.DirectorySeparatorChar = '\\')
   let searchPaths = if isWindows then WindowsPaths else UnixPaths
