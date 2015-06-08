@@ -15,7 +15,7 @@ with **Sublime Text 3**.
 - Tooltips
 - Go to declaration
 - Show definitions in current file
-- Syntax highligting
+- Syntax highlighting
 - Runs F# scripts in output panel
 
 
