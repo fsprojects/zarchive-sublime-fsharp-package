@@ -2,31 +2,21 @@
 
 ## FSharp
 
-This package provides support
-for F# development in Sublime Text 3.
-
-FSharp is only compatible
+Support for F# development in Sublime Text 3.
+The FSharp package
+is only compatible
 with **Sublime Text 3**.
-
----
-
-**FSharp is currently a preview
-and not ready for use**.
-If you want to contribute to its development,
-you can read on
-to learn how to set up
-a development environment.
-
----
 
 
 ### Building
+
 
 #### Linux/Mac
 
 ```shell
 ./build.sh
 ```
+
 
 #### Windows
 
@@ -36,18 +26,29 @@ build.cmd
 
 ### Installing
 
-The **Install** build target
+
+The `install` task
 will publish the package
-to Sublime Text's *Data* directory:
+to Sublime Text's *Data* directory.
+
+
+#### Linux/Mac
 
 ```shell
 ./build.sh install
 ```
 
+
+### Windows
+
+```shell
+build.cmd install
+```
+
 For portable installations of Sublime Text
 (Windows only),
 you must pass along
-the data directory:
+the data directory.
 
 ```shell
 build install sublimeDir="d:\Path\To\Sublime\Text\Data"
