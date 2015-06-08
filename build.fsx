@@ -3,6 +3,7 @@
 open System
 open System.Net
 open System.IO
+
 open Fake
 open Fake.Git
 
@@ -14,8 +15,9 @@ let sublimePath () =
          (Environment.GetEnvironmentVariable("HOME") + "/.config/sublime-text-3") ]
 
   let WindowsPaths =
-      [  Environment.GetEnvironmentVariable("SUBLIME_TEXT_DATA")
-         Environment.ExpandEnvironmentVariables(@"%APPDATA%\Sublime Text 3") ]
+    // Non-standard variable. It saves time while developing.
+    [  Environment.GetEnvironmentVariable("SUBLIME_TEXT_DATA")
+       Environment.ExpandEnvironmentVariables(@"%APPDATA%\Sublime Text 3") ]
 
   let isWindows = (Path.DirectorySeparatorChar = '\\')
   let searchPaths = if isWindows then WindowsPaths else UnixPaths
