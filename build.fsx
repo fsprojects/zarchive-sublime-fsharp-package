@@ -50,7 +50,7 @@ Target "Install" (fun _ ->
 Target "Release" (fun _ ->
     let tag = getBuildParam "tag"
     if String.IsNullOrEmpty (tag) then
-        failwith "please provide a tag"
+        failwith "please provide a tag as 'tag=x.x.x'"
     CreateDir "release"
     Repository.clone "release" releaseRepo "."
     Repository.fullclean "release"
