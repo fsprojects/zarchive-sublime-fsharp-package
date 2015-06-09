@@ -65,7 +65,7 @@ class FileInfo(object):
     @property
     def is_fsharp_script_file(self):
         '''
-        Returns `True` if `self` is a .fsx/.fsi/.fsscript file.
+        Returns `True` if `self` is a .fsx/.fsscript file.
         '''
         return self.path and (extension_equals(self.path, '.fsx')
                 or extension_equals(self.path, '.fsscript'))
