@@ -37,7 +37,7 @@ let sublimeDataPath () =
          exit 1
   | _ -> directories.Head
 
-let getSublimeStartArgs () = 
+let getSublimeStartArgs () =
     if not isWindows then
         let isRunning = getProcessesByName("Sublime Text") |> Seq.length > 0
         if isRunning then Some("open", "-a \"Sublime Text\"") else None
@@ -74,7 +74,7 @@ Target "Build" (fun _ ->
 Target "Install" (fun _ ->
     let startArgs = getSublimeStartArgs ()
     killSublime ()
-    let sublimePath = if (not  (String.IsNullOrWhiteSpace dataDir)) && (Directory.Exists dataDir) then dataDir else sublimeDataPath ()
+    let sublimePath = if (not (String.IsNullOrWhiteSpace dataDir)) && (Directory.Exists dataDir) then dataDir else sublimeDataPath ()
     trace sublimePath
     let target = Path.Combine(sublimePath, "Packages/FSharp")
     CopyRecursive "bin" target true |> ignore
