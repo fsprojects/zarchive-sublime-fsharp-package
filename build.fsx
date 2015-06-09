@@ -39,7 +39,7 @@ let sublimeDataPath () =
 
 let getSublimeStartArgs () =
     if not isWindows then
-        let isRunning = getProcessesByName("Sublime Text") |> Seq.length > 0
+        let isRunning = getProcessesByName "Sublime Text" |> Seq.length > 0
         if isRunning then Some("open", "-a \"Sublime Text\"") else None
     else
         let query = "SELECT CommandLine FROM Win32_Process WHERE Name LIKE '%sublime_text%'"
@@ -74,7 +74,7 @@ Target "Build" (fun _ ->
 Target "Install" (fun _ ->
     let startArgs = getSublimeStartArgs ()
     killSublime ()
-    let sublimePath = if (not (String.IsNullOrWhiteSpace dataDir)) && (Directory.Exists dataDir) then dataDir else sublimeDataPath ()
+    let sublimePath = if (not (String.IsNullOrWhiteSpace dataDir)) && Directory.Exists dataDir then dataDir else sublimeDataPath ()
     trace sublimePath
     let target = Path.Combine(sublimePath, "Packages/FSharp")
     CopyRecursive "bin" target true |> ignore
@@ -83,7 +83,7 @@ Target "Install" (fun _ ->
 
 Target "Release" (fun _ ->
     let tag = getBuildParam "tag"
-    if String.IsNullOrEmpty (tag) then
+    if String.IsNullOrEmpty tag then
         failwith "please provide a tag as 'tag=x.x.x'"
     CreateDir "release"
     Repository.clone "release" releaseRepo "."
