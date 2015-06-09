@@ -29,7 +29,8 @@ build.cmd
 
 The `install` task
 will publish the package
-to Sublime Text's *Data* directory, and restart Sublime Text if it is running.
+to Sublime Text's *Data* directory,
+and restart Sublime Text if it is running.
 
 
 #### Linux/Mac
