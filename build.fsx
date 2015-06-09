@@ -1,21 +1,23 @@
 #r "packages/FAKE/tools/FakeLib.dll" // include Fake lib
+#r "System.Management"
 
 open System
 open System.Net
 open System.IO
-
+open System.Management
 open Fake
 open Fake.Git
 open Fake.ProcessHelper
+
 let releaseRepo = "https://github.com/guillermooo/sublime-fsharp-package-releases.git"
 
 // build parameters
-let installDir     = getBuildParam "sublimeDir"
-let restartSublime = getBuildParam "restartSublime" |> String.IsNullOrWhiteSpace |> not
+let dataDir     = getBuildParam "sublimeDir"
+
 ProcessHelper.killCreatedProcesses <- false
 
 let isWindows = (Path.DirectorySeparatorChar = '\\')
-let sublimePath () =
+let sublimeDataPath () =
   let UnixPaths =
       [  (Environment.GetEnvironmentVariable("HOME") + "/Library/Application Support/Sublime Text 3")
          (Environment.GetEnvironmentVariable("HOME") + "/.config/sublime-text-3") ]
@@ -25,7 +27,6 @@ let sublimePath () =
     [  Environment.GetEnvironmentVariable("SUBLIME_TEXT_DATA")
        Environment.ExpandEnvironmentVariables(@"%APPDATA%\Sublime Text 3") ]
 
-  let isWindows = (Path.DirectorySeparatorChar = '\\')
   let searchPaths = if isWindows then WindowsPaths else UnixPaths
   let directories =
      searchPaths
@@ -36,17 +37,29 @@ let sublimePath () =
          exit 1
   | _ -> directories.Head
 
-let startSublime () =
-   trace "Starting sublime"
-   fireAndForget (fun info ->
-     info.FileName <- "open"
-     info.Arguments <- "-a \"Sublime Text\""
+let getSublimeStartArgs () = 
+    if not isWindows then
+        let isRunning = getProcessesByName("Sublime Text") |> Seq.length > 0
+        if isRunning then Some("open", "-a \"Sublime Text\"") else None
+    else
+        let query = "SELECT CommandLine FROM Win32_Process WHERE Name LIKE '%sublime_text%'"
+        use searcher = new System.Management.ManagementObjectSearcher(query);
+        searcher.Get ()
+        |> Seq.cast
+        |> Seq.tryFind (fun (mo:ManagementObject) -> true)
+        |> Option.map (fun mo -> mo.["CommandLine"] |> string, "")
+
+let startSublime (startArgs: (string*string) option) =
+   startArgs |> Option.iter(fun (file,args) ->
+     fireAndForget (fun info ->
+       info.FileName <- file
+       info.Arguments <- args
+     )
    )
 
-Target "KillSublime" (fun _ ->
+let killSublime () =
    let proc = if isWindows then "sublime_text" else "Sublime Text"
    killProcess proc
-)
 
 Target "Clean" (fun _ ->
     DeleteDirs ["bin"; "release"]
@@ -59,12 +72,13 @@ Target "Build" (fun _ ->
 )
 
 Target "Install" (fun _ ->
-    let installDir = getBuildParam "sublimeDir"
-    let sublimePath = if (not  (String.IsNullOrWhiteSpace installDir)) && (Directory.Exists installDir) then installDir else sublimePath ()
+    let startArgs = getSublimeStartArgs ()
+    killSublime ()
+    let sublimePath = if (not  (String.IsNullOrWhiteSpace dataDir)) && (Directory.Exists dataDir) then dataDir else sublimeDataPath ()
     trace sublimePath
     let target = Path.Combine(sublimePath, "Packages/FSharp")
     CopyRecursive "bin" target true |> ignore
-    if restartSublime then do startSublime ()
+    startSublime startArgs
 )
 
 Target "Release" (fun _ ->
@@ -87,7 +101,6 @@ Target "Release" (fun _ ->
 )
 
 "Clean"
-    =?> ("KillSublime", restartSublime)
     ==> "Build"
 
 "Build"
