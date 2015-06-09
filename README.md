@@ -22,7 +22,7 @@ Code intelligence for **F# development** in **Sublime Text 3**.
 #### Cross-platform
 
 - Start Sublime Text
-- Press F7
+- Press <kbd>F7</kbd>
 - Select **Build FSharp**
 
 
@@ -51,7 +51,7 @@ and restart Sublime Text if it is running.
 #### Cross-platform
 
 - Start Sublime Text
-- Press F7
+- Press <kbd>F7</kbd>
 - Select **Build FSharp - Publish Locally (Install)**
 
 
