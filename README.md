@@ -2,7 +2,7 @@
 
 # FSharp
 
-Support for **F# development** in **Sublime Text 3**.
+Code intelligence for **F# development** in **Sublime Text 3**.
 
 
 ## Features
