@@ -64,6 +64,9 @@ and restart Sublime Text if it is running.
 
 #### Windows
 
+For full installations,
+run the following command:
+
 ```shell
 build.cmd install
 ```
@@ -76,7 +79,7 @@ the data directory.
 build install sublimeDir="d:\Path\To\Sublime\Text\Data"
 ```
 
-For convenience, you can optionally set
+Optionally, you can set
 the `SUBLIME_TEXT_DATA` environment variable,
 which should point to the Sublime Text *Data* directory.
 If `SUBLIME_TEXT_DATA` is present,
