@@ -13,7 +13,7 @@ with **Sublime Text 3**.
 - Autocompletion
 - Live error checking
 - Tooltips
-- Go to declaration
+- Go to definition
 - Show definitions in current file
 - Syntax highlighting
 - Runs F# scripts in output panel
