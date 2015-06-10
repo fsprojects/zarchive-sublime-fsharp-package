@@ -23,6 +23,24 @@ from FSharp.sublime_plugin_lib.sublime import after
 _logger = logging.getLogger(__name__)
 
 
+class IdleParser(IdleIntervalEventListener):
+    """
+    Reparses the current view after @self.duration milliseconds of inactivity.
+    """
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.duration = 1000
+
+    def check(self, view):
+        return all((
+            view.file_name(),
+            FileInfo(view).is_fsharp_code))
+
+    def on_idle(self, view):
+        editor_context.parse_view(view)
+
+
 class IdleAutocomplete(IdleIntervalEventListener):
     """
     Shows the autocomplete list after @self.duration milliseconds of inactivity.
