@@ -33,9 +33,7 @@ class IdleParser(IdleIntervalEventListener):
         self.duration = 1000
 
     def check(self, view):
-        return all((
-            view.file_name(),
-            FileInfo(view).is_fsharp_code))
+        return FileInfo(view).is_fsharp_code
 
     def on_idle(self, view):
         editor_context.parse_view(view)
