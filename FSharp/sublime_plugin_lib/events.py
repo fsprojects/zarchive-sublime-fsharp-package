@@ -1,11 +1,9 @@
 import threading
 from collections import defaultdict
 
-import sublime
 import sublime_plugin
 
-# move this code to the sublime_plugin_lib
-from FSharp.sublime_plugin_lib.sublime import after
+from .sublime import after
 
 
 class IdleIntervalEventListener(sublime_plugin.EventListener):
