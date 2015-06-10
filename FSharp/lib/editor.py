@@ -101,17 +101,24 @@ class Editor(object):
     def parse_file(self, fs_file, content):
         self.fsac.send_request(ParseRequest(fs_file.path, content))
 
-    def parse_view(self, view):
+    def parse_view(self, view, force=False):
+        """
+        Sends a parse request to fsac.
+
+        @view
+          The view whose content should be parsed.
+
+        @force
+          If `True`, the @view will be parsed even if it's clean.
+        """
+
+        if not (view.is_dirty() or force):
+            return
+
         # FIXME: In ST, I think a file may have a .file_name() and still not
         # exist on disk because it's been unlinked.
         # ignore unsaved files
-        if not view.file_name():
-            return
-
         fs_file = FileInfo(view)
-
-        if not fs_file.is_fsharp_file:
-            return
 
         self.update_project_data(fs_file)
         # TODO: very inneficient?
