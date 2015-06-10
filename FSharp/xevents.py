@@ -38,7 +38,8 @@ class IdleParser(IdleIntervalEventListener):
             FileInfo(view).is_fsharp_code))
 
     def on_idle(self, view):
-        editor_context.parse_view(view)
+        if view.is_dirty():
+            editor_context.parse_view(view)
 
 
 class IdleAutocomplete(IdleIntervalEventListener):
@@ -98,7 +99,7 @@ class FSharpProjectTracker(sublime_plugin.EventListener):
             if FSharpProjectTracker.parsed.get(view_id):
                 return
 
-        editor_context.parse_view(view)
+        editor_context.parse_view(view, force=True)
         self.set_parsed(view, True)
 
     def on_load_async(self, view):
