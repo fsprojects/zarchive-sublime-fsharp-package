@@ -4,8 +4,8 @@
 
 import os
 
+from FSharp.sublime_plugin_lib import path
 from FSharp.sublime_plugin_lib.path import find_file_by_extension
-from FSharp.sublime_plugin_lib.path import extension_equals
 
 
 def find_fsproject(start):
@@ -18,29 +18,13 @@ def find_fsproject(start):
     return find_file_by_extension(start, 'fsproj')
 
 
-class FileInfo(object):
+class FileInfo(path.FileInfo):
     """
     Inspects a file for interesting properties from the plugin's POV.
     """
 
-    def __init__(self, view_or_fname):
-        """
-        @view_or_fname
-          A Sublime Text view or a file name.
-        """
-        assert view_or_fname, 'wrong arg: %s' % view_or_fname
-        self.view_or_fname = view_or_fname
-
-    def __str__(self):
-        return self.path
-
-    @property
-    def path(self):
-        try:
-            # The returned path can be None, for example, if the view is unsaved.
-            return self.view_or_fname.file_name()
-        except AttributeError:
-            return self.view_or_fname
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
     @property
     def is_fsharp_file(self):
@@ -60,19 +44,18 @@ class FileInfo(object):
         '''
         Returns `True` if `self` is a .fs file.
         '''
-        return self.path and extension_equals(self.path, '.fs')
+        return self.extension_equals('.fs')
 
     @property
     def is_fsharp_script_file(self):
         '''
         Returns `True` if `self` is a .fsx/.fsscript file.
         '''
-        return self.path and (extension_equals(self.path, '.fsx')
-                or extension_equals(self.path, '.fsscript'))
+        return self.extension_in('.fsx', '.fsscript')
 
     @property
     def is_fsharp_project_file(self):
-        return self.path and extension_equals(self.path, '.fsproj')
+        return self.extension_equals('.fsproj')
 
 
 class FSharpProjectFile(object):
