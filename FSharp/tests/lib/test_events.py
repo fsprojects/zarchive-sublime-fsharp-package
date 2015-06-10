@@ -1,9 +1,9 @@
 import unittest
 
-from FSharp.lib.events import IdleIntervalEventListener
+from FSharp.sublime_plugin_lib.events import IdleIntervalEventListener
 
 
-class Test_FSharpFile(unittest.TestCase):
+class Test_IdleIntervalEventListener(unittest.TestCase):
     def testDefaultIdleInterval(self):
         listener = IdleIntervalEventListener()
         self.assertEqual(500, listener.duration)
