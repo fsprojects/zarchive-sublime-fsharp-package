@@ -38,7 +38,7 @@ class IdleAutocomplete(IdleIntervalEventListener):
         # comment. If strings or comments, offer plain Sublime Text completions.
         return all((
             view.file_name(),
-            not view.match_selector(view.sel()[0].b, 'source.fsharp string, source.fsharp comment'),
+            not self._in_string_or_comment(view),
             FileInfo(view).is_fsharp_code))
 
     def on_idle(self, view):
@@ -53,6 +53,13 @@ class IdleAutocomplete(IdleIntervalEventListener):
 
         if is_after_dot:
             view.window().run_command('fs_run_fsac', {'cmd': 'completion'})
+
+    def _in_string_or_comment(self, view):
+        try:
+            return view.match_selector(view.sel()[0].b,
+                    'source.fsharp string, source.fsharp comment')
+        except IndexError:
+            pass
 
 
 class FSharpProjectTracker(sublime_plugin.EventListener):
