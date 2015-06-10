@@ -38,8 +38,7 @@ class IdleParser(IdleIntervalEventListener):
             FileInfo(view).is_fsharp_code))
 
     def on_idle(self, view):
-        if view.is_dirty():
-            editor_context.parse_view(view)
+        editor_context.parse_view(view)
 
 
 class IdleAutocomplete(IdleIntervalEventListener):
