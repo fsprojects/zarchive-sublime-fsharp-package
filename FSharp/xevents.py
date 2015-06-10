@@ -52,10 +52,8 @@ class IdleAutocomplete(IdleIntervalEventListener):
     def check(self, view):
         # Offer F# completions in F# files when the caret isn't in a string or
         # comment. If strings or comments, offer plain Sublime Text completions.
-        return all((
-            view.file_name(),
-            not self._in_string_or_comment(view),
-            FileInfo(view).is_fsharp_code))
+        return (not self._in_string_or_comment(view)
+                and FileInfo(view).is_fsharp_code)
 
     def on_idle(self, view):
         self._show_completions(view)
