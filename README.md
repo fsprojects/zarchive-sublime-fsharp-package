@@ -9,7 +9,7 @@ Code intelligence for **F# development** in **Sublime Text 3**.
 
 - Autocompletion
 - Live error checking
-- Tooltips
+- Tooltips (CTRL k i)
 - Go to definition
 - Show definitions in current file
 - Syntax highlighting
