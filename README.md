@@ -22,6 +22,7 @@ Keyboard Shortcut   | Action
 ------------------ | ------------- |
 <kbd>Ctrl+.</kbd>, <kbd>Ctrl+.</kbd> | Show F# commands
 <kbd>Ctrl+.</kbd>, <kbd>Ctrl+o</kbd> | Show last output panel
+<kbd>Ctrl+.</kbd>, <kbd>Ctrl+i</kbd> | Show tooltip for symbol
 <kbd>F12</kbd> | Go to definition
 <kbd>Ctrl+space</kbd> | Open autocomplete list
 
