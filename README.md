@@ -16,6 +16,16 @@ Code intelligence for **F# development** in **Sublime Text 3**.
 - Runs F# scripts in output panel
 
 
+## Main Keyboard Shortcuts
+
+Keyboard Shortcut   | Action
+------------------ | ------------- |
+<kbd>Ctrl+.</kbd>, <kbd>Ctrl+.</kbd> | Show F# commands
+<kbd>Ctrl+.</kbd>, <kbd>Ctrl+o</kbd> | Show last output panel
+<kbd>F12</kbd> | Go to definition
+<kbd>Ctrl+space</kbd> | Open autocomplete list
+
+
 ## Building
 
 
