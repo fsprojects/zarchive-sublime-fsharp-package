@@ -91,6 +91,7 @@ Target "Release" (fun _ ->
     CopyRecursive "bin" "release" true |> ignore
     DeleteDirs ["release/tests"]
     DeleteFile "release/test_runner.py"
+    CopyFile "release/README.md" "README.md_"
     StageAll "release"
     Commit "release" (sprintf "new version %s" tag)
     Branches.tag "release" tag
