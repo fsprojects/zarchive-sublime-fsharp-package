@@ -137,7 +137,7 @@ class fs_run_fsac(sublime_plugin.WindowCommand):
             return
         else:
             self.do_parse()
-            editor_context.fsac.send_request(FindDeclRequest(fname, row + 1, col))
+            editor_context.fsac.send_request(FindDeclRequest(fname, row + 1, col + 1))
 
     def do_completion(self):
         fname = self.get_active_file_name ()
@@ -152,7 +152,7 @@ class fs_run_fsac(sublime_plugin.WindowCommand):
             # raise first, because the event listener drains the completions queue
             raise_event(ON_COMPLETIONS_REQUESTED, {})
             self.do_parse()
-            editor_context.fsac.send_request(CompletionRequest(fname, row + 1, col))
+            editor_context.fsac.send_request(CompletionRequest(fname, row + 1, col + 1))
             self.window.run_command('auto_complete')
 
     def do_tooltip(self):
@@ -166,7 +166,7 @@ class fs_run_fsac(sublime_plugin.WindowCommand):
             return
         else:
             self.do_parse()
-            editor_context.fsac.send_request(TooltipRequest(fname, row + 1, col))
+            editor_context.fsac.send_request(TooltipRequest(fname, row + 1, col + 1))
 
     def do_run_file(self):
         try:

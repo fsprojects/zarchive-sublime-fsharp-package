@@ -140,7 +140,7 @@ class FSharpAutocomplete(sublime_plugin.EventListener):
     def fetch_completions():
         data = completions_queue.get(block=True, timeout=.75)
         data = json.loads(data.decode('utf-8'))
-        completions = [[item, item] for item in data['Data']]
+        completions = [[item["Name"], item["Name"]] for item in data['Data']]
         return completions
 
     @staticmethod
