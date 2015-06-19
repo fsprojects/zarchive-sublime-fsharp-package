@@ -68,7 +68,7 @@ Target "Clean" (fun _ ->
 Target "Build" (fun _ ->
     CreateDir "bin"
     CopyRecursive "FSharp" "bin" true |> ignore
-    Unzip "bin/fsac/fsac" "paket-files/github.com/packages/fsac"
+    Unzip "bin/fsac/fsac" "paket-files/github.com/fsautocomplete.zip"
 )
 
 Target "Install" (fun _ ->
