@@ -122,3 +122,14 @@ class ErrorInfo(object):
     col = self.start_column
     pt = view.text_point(row, col)
     return sublime.Region(pt, pt + self.length)
+
+  def to_regex_result_data(self):
+    d = {
+      'file_name': self.file_name,
+      'severity': self.severity.upper(),
+      'subcategory': self.subcategory.upper(),
+      'start_line': self.start_line_alternate,
+      'start_column': int(self.start_column) + 1,
+      'message': self.message
+    }
+    return d
