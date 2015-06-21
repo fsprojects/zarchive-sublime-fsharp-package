@@ -1,6 +1,6 @@
 import unittest
 
-from FSharp.sublime_plugin_lib.events import IdleIntervalEventListener
+from FSharp.subtrees.plugin_lib.events import IdleIntervalEventListener
 
 
 class Test_IdleIntervalEventListener(unittest.TestCase):

@@ -11,7 +11,7 @@ import contextlib
 import threading
 
 
-from FSharp.sublime_plugin_lib.panels import OutputPanel
+from FSharp.subtrees.plugin_lib.panels import OutputPanel
 
 
 class RunFsharpTests(sublime_plugin.WindowCommand):

@@ -22,7 +22,7 @@ before_install:
 install:
     - sh travis.sh bootstrap
     - rm "$ST3P/$PACKAGE" # Because UnitTesting has created this for us.
-    - ln -s "$PWD/FSharp" "$ST3P/$PACKAGE" # Because this is the correct directory.
+    - ln -s "$PWD/src" "$ST3P/$PACKAGE" # Because this is the correct directory.
     - sh build.sh
 
 build: false

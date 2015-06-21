@@ -23,13 +23,13 @@
 
 				{
 					"name": "Test (All)",
-					"working_dir": "${project_path}/FSharp",
+					"working_dir": "${project_path}/src",
 					"target": "run_fsharp_tests",
 				},
 
 				{
 					"name": "Test (This File Only)",
-					"working_dir": "${project_path}/FSharp",
+					"working_dir": "${project_path}/src",
 					"target": "run_fsharp_tests",
 					"active_file_only": true
 				}

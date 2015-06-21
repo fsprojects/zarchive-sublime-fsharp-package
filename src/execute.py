@@ -16,9 +16,9 @@ import time
 
 from Default.exec import ProcessListener
 from Default.exec import AsyncProcess
-from FSharp.sublime_plugin_lib.sublime import after
+from FSharp.subtrees.plugin_lib.sublime import after
 
-from FSharp.sublime_plugin_lib.panels import OutputPanel
+from FSharp.subtrees.plugin_lib.panels import OutputPanel
 
 
 class fs_exec(sublime_plugin.WindowCommand, ProcessListener):

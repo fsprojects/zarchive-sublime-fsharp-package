@@ -16,9 +16,9 @@ from FSharp.fsharp import editor_context
 from FSharp.lib.project import FileInfo
 from FSharp.lib.response_processor import add_listener
 from FSharp.lib.response_processor import ON_COMPLETIONS_REQUESTED
-from FSharp.sublime_plugin_lib.context import ContextProviderMixin
-from FSharp.sublime_plugin_lib.sublime import after
-from FSharp.sublime_plugin_lib.events import IdleIntervalEventListener
+from FSharp.subtrees.plugin_lib.context import ContextProviderMixin
+from FSharp.subtrees.plugin_lib.sublime import after
+from FSharp.subtrees.plugin_lib.events import IdleIntervalEventListener
 
 
 _logger = PluginLogger(__name__)

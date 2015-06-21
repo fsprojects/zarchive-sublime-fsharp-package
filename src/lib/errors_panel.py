@@ -2,7 +2,7 @@ from threading import Lock
 
 import sublime
 
-from FSharp.sublime_plugin_lib.panels import OutputPanel
+from FSharp.subtrees.plugin_lib.panels import OutputPanel
 
 
 # TODO: move this to common plugin lib.
@@ -35,9 +35,9 @@ class ErrorsPanel(object):
             panel = OutputPanel(self.name)
             panel.set('result_file_regex', self._errors_pattern)
             if sublime.version() > '3083':
-                panel.view.set_syntax_file('Packages/FSharp/FSharp Analyzer Output.sublime-syntax')
+                panel.view.set_syntax_file('Packages/FSharp/Support/FSharp Analyzer Output.sublime-syntax')
             else:
-                panel.view.set_syntax_file('Packages/FSharp/FSharp Analyzer Output.tmLanguage')
+                panel.view.set_syntax_file('Packages/FSharp/Support/FSharp Analyzer Output.tmLanguage')
             panel.write(formatted)
             # TODO(guillermooo): Do not show now if other panel is showing.
             panel.show()

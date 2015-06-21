@@ -1,6 +1,6 @@
 import sublime
 
-from FSharp.sublime_plugin_lib.sublime import after
+from FSharp.subtrees.plugin_lib.sublime import after
 
 
 ERROR_TEMPLATE = """

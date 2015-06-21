@@ -30,8 +30,8 @@ from FSharp.lib.response_processor import add_listener
 from FSharp.lib.response_processor import ON_COMPLETIONS_REQUESTED
 from FSharp.lib.response_processor import process_resp
 from FSharp.lib.response_processor import raise_event
-from FSharp.sublime_plugin_lib.context import ContextProviderMixin
-from FSharp.sublime_plugin_lib.panels import OutputPanel
+from FSharp.subtrees.plugin_lib.context import ContextProviderMixin
+from FSharp.subtrees.plugin_lib.panels import OutputPanel
 
 
 _logger = PluginLogger(__name__)
