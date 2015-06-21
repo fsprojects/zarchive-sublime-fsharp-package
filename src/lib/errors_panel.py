@@ -1,54 +1,24 @@
-from threading import Lock
-
-import sublime
-
-from FSharp.subtrees.plugin_lib.panels import OutputPanel
+from FSharp.subtrees.plugin_lib.panels import ErrorsPanel
 
 
-# TODO: move this to common plugin lib.
-class ErrorsPanel(object):
-    _errors_pattern = r'^\w+\|\w+\|(.+)\|(\d+)\|(\d+)\|(.+)$'
-    _lock = Lock()
+class FSharpErrorsPanel(ErrorsPanel):
+    """
+    Customized error panel for FSharp.
+    """
 
-    def __init__(self, name):
-        self.name = name
-        self._errors = []
+    def __init__(self):
+        super().__init__(name='fsharp.errors')
 
-    @property
-    def errors(self):
-        with self._lock:
-            return self._errors
+        # Override defaults.
+        self._sublime_syntax_file = 'Packages/FSharp/Support/FSharp Analyzer Output.sublime-syntax'
+        self._tm_language_file = 'Packages/FSharp/Support/FSharp Analyzer Output.hidden-tmLanguage'
+        self._errors_pattern = r'^\w+\|\w+\|(.+)\|(\d+)\|(\d+)\|(.+)$'
+        self._errors_template = '{severity}|{subcategory}|{file_name}|{start_line}|{start_column}|{message}'
 
-    @errors.setter
-    def errors(self, value):
-        with self._lock:
-            self._errors = value
+    def get_item_result_data(self, item):
+        """
+        Subclasses must implement this method.
 
-    def display(self):
-        if len(self.errors) == 0:
-            panel = OutputPanel(self.name)
-            panel.hide()
-            return
-
-        formatted = self.format()
-        with self._lock:
-            panel = OutputPanel(self.name)
-            panel.set('result_file_regex', self._errors_pattern)
-            if sublime.version() > '3083':
-                panel.view.set_syntax_file('Packages/FSharp/Support/FSharp Analyzer Output.sublime-syntax')
-            else:
-                panel.view.set_syntax_file('Packages/FSharp/Support/FSharp Analyzer Output.tmLanguage')
-            panel.write(formatted)
-            # TODO(guillermooo): Do not show now if other panel is showing.
-            panel.show()
-
-    def clear(self):
-        self.errors = []
-
-    def update(self, errors):
-        self.errors = list(sorted(errors, key=lambda x: x.start_line))
-
-    def format(self):
-        tpl = '{severity}|{subcategory}|{file_name}|{start_line}|{start_column}|{message}'
-        formatted = (tpl.format(**e.to_regex_result_data()) for e in self.errors)
-        return '\n'.join(formatted)
+        Must return a dictionary to be used as data for `errors_template`.
+        """
+        return item.to_regex_result_data()
