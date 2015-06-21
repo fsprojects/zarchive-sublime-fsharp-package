@@ -4,7 +4,7 @@ import os
 import queue
 import threading
 
-from FSharp.sublime_plugin_lib.plat import is_windows
+from FSharp.subtrees.plugin_lib.plat import is_windows
 
 from .pipe_server import PipeServer
 

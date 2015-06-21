@@ -2,7 +2,7 @@ from threading import Lock
 
 import sublime
 
-from FSharp.sublime_plugin_lib.panels import OutputPanel
+from FSharp.subtrees.plugin_lib.panels import OutputPanel
 
 
 # TODO: move this to common plugin lib.

@@ -15,7 +15,7 @@ from FSharp.fsac.response import CompilerLocationResponse
 from FSharp.fsac.response import DeclarationsResponse
 from FSharp.fsac.response import ErrorInfo
 from FSharp.fsac.response import ProjectResponse
-from FSharp.sublime_plugin_lib.panels import OutputPanel
+from FSharp.subtrees.plugin_lib.panels import OutputPanel
 
 
 _logger = logging.getLogger(__name__)
@@ -97,7 +97,7 @@ def process_resp(data):
         show_info_tooltip(data['Data'])
         return
 
-    if data['Kind'] == 'INFO' and data['Data']:
+    if data['Kind'] == 'ggINFO' and data['Data']:
         _logger.info(str(data))
         return
 

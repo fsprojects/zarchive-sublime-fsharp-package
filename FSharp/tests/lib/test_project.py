@@ -10,7 +10,7 @@ import sublime
 from FSharp.lib.project import find_fsproject
 from FSharp.lib.project import FileInfo
 from FSharp.lib.project import FSharpProjectFile
-from FSharp.sublime_plugin_lib.io import touch
+from FSharp.subtrees.plugin_lib.io import touch
 
 
 @contextlib.contextmanager

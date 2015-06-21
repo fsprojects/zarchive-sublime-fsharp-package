@@ -4,8 +4,8 @@
 
 import os
 
-from FSharp.sublime_plugin_lib import path
-from FSharp.sublime_plugin_lib.path import find_file_by_extension
+from FSharp.subtrees.plugin_lib import path
+from FSharp.subtrees.plugin_lib.path import find_file_by_extension
 
 
 def find_fsproject(start):
