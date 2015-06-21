@@ -90,7 +90,6 @@ def process_resp(data):
         return
 
     if data['Kind'] == 'ERROR':
-        sublime.status_message('FSharp - ERROR: ' + data['Data'])
         _logger.error(str(data))
         return
 
@@ -100,7 +99,6 @@ def process_resp(data):
 
     if data['Kind'] == 'INFO' and data['Data']:
         _logger.info(str(data))
-        print("FSharp:", data['Data'])
         return
 
     if data['Kind'] == 'finddecl' and data['Data']:
