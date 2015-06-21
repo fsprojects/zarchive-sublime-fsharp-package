@@ -10,6 +10,7 @@ import queue
 import sublime
 import sublime_plugin
 
+from FSharp import PluginLogger
 from FSharp._init_ import editor_context
 from FSharp.fsac.request import AdHocRequest
 from FSharp.fsac.request import CompletionRequest
@@ -33,7 +34,7 @@ from FSharp.sublime_plugin_lib.context import ContextProviderMixin
 from FSharp.sublime_plugin_lib.panels import OutputPanel
 
 
-_logger = logging.getLogger(__name__)
+_logger = PluginLogger(__name__)
 
 
 def erase_status(view, key):

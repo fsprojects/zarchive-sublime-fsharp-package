@@ -3,11 +3,12 @@
 
 import logging
 
+from FSharp import PluginLogger
 from FSharp.lib.editor import Editor
 from FSharp.lib.response_processor import process_resp
 
 
-logger = logging.getLogger(__name__)
+logger = PluginLogger(__name__)
 
 logger.debug('starting editor context...')
 
