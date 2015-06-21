@@ -51,6 +51,7 @@ class Editor(object):
 
     def on_errors_available(self, data):
         self.errors = data['response']['Data']
+        print(self.errors)
 
     @property
     def errors(self):

@@ -10,6 +10,7 @@ import threading
 import sublime
 import sublime_plugin
 
+from FSharp import PluginLogger
 from FSharp.fsac.server import completions_queue
 from FSharp.fsharp import editor_context
 from FSharp.lib.project import FileInfo
@@ -20,7 +21,7 @@ from FSharp.sublime_plugin_lib.sublime import after
 from FSharp.sublime_plugin_lib.events import IdleIntervalEventListener
 
 
-_logger = logging.getLogger(__name__)
+_logger = PluginLogger(__name__)
 
 
 class IdleParser(IdleIntervalEventListener):
