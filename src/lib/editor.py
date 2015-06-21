@@ -15,7 +15,7 @@ from FSharp.fsac.request import ParseRequest
 from FSharp.fsac.request import ProjectRequest
 from FSharp.fsac.response import ErrorInfo
 from FSharp.lib import response_processor
-from FSharp.lib.errors_panel import ErrorsPanel
+from FSharp.lib.errors_panel import FSharpErrorsPanel
 from FSharp.lib.project import FileInfo
 from FSharp.lib.project import FSharpProjectFile
 from FSharp.lib.response_processor import ON_COMPILER_PATH_AVAILABLE
@@ -37,7 +37,7 @@ class Editor(object):
         self.project_file = None
 
         self._errors = []
-        self.errors_panel = ErrorsPanel('fsharp.errors')
+        self.errors_panel = FSharpErrorsPanel()
 
         self.fsac.send_request(CompilerLocationRequest())
         # todo: register as decorator instead?
@@ -54,7 +54,7 @@ class Editor(object):
 
     def on_errors_available(self, data):
         self.errors = data['response']['Data']
-        self.errors_panel.update(ErrorInfo(e) for e in self.errors)
+        self.errors_panel.update((ErrorInfo(e) for e in self.errors), sort_key=lambda x: x.start_line)
         self.errors_panel.display()
 
     @property

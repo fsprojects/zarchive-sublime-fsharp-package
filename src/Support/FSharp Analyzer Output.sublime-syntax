@@ -1,7 +1,7 @@
 %YAML 1.2
 ---
 name: FSharp Analyzer Output
-hidden: false
+hidden: true
 scope: text.fsharp-analysis-output
 
 contexts:
