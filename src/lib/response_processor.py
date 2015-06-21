@@ -97,7 +97,7 @@ def process_resp(data):
         show_info_tooltip(data['Data'])
         return
 
-    if data['Kind'] == 'ggINFO' and data['Data']:
+    if data['Kind'] == 'INFO' and data['Data']:
         _logger.info(str(data))
         return
 
