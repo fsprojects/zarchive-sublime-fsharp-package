@@ -43,14 +43,14 @@
 		"trim_trailing_white_space_on_save": true,
 		"default_line_ending": "unix",
 		"translate_tabs_to_spaces": true,
-	    "folder_exclude_patterns": [".svn", ".git", ".hg", "CVS", "bin"]
 	},
 
 	"folders":
 	[
 		{
+			"path": ".",
 			"follow_symlinks": true,
-			"path": "."
+			"folder_exclude_patterns": [".svn", ".git", ".hg", "CVS", "bin", ".paket", "packages", "paket-files"]
 		}
 	]
 }
