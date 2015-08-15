@@ -72,13 +72,19 @@ class Editor(object):
     def compiler_path(self):
         if self.compilers_path is None:
             return
-        return os.path.join(self.compilers_path, 'fsc.exe')
+        if sublime.platform() ==  'windows':
+            return os.path.join(self.compilers_path, 'fsc.exe')
+        else:
+            return 'fsharpc'
 
     @property
     def interpreter_path(self):
         if self.compilers_path is None:
             return None
-        return os.path.join(self.compilers_path, 'fsi.exe')
+        if sublime.platform() ==  'windows':
+            return os.path.join(self.compilers_path, 'fsi.exe')
+        else:
+            return 'fsharpi'
 
     def update_project_data(self, fs_file):
         assert isinstance(fs_file, FileInfo), 'wrong argument: %s' % fs_file
