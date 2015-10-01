@@ -1,4 +1,11 @@
 #!/bin/bash
+
+if ! (test "command -v fsharpc" || test "command -v fsc")
+then
+  echo "Error: F# compiler not found. Is it installed?" >&2
+  exit 1
+fi
+
 if test "$OS" = "Windows_NT"
 then
   # use .Net
