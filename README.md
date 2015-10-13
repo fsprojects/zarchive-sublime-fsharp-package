@@ -111,3 +111,11 @@ Pull requests to FSharp welcome!
 * Install via `./build.[sh|cmd] install`
 * Restart Sublime Text
 * Run the tests via command palette: **Build FSharp: Test (All)**
+
+Maintainers
+-----------
+
+Tha maintainers of this repository appointed by the F# Core Engineering Group are:
+
+ - [Robin Neatherway](https://github.com/rneatherway), [Steffen Forkmann](http://github.com/forki), [Karl Nilsson](http://github.com/kjnilsson), [Dave Thomas](http://github.com/7sharp9) and [Guillermo López-Anglada](http://github.com/guillermooo)
+ - The primary maintainer for this repository is [Guillermo López-Anglada](http://github.com/guillermooo)
