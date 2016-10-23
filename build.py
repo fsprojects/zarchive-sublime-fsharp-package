@@ -77,6 +77,20 @@ def develop():
 
 
 @task
+def undevelop():
+    if sys.platform == 'win32':
+        path_to_sublime_text_data = os.environ.get('SUBLIME_TEXT_DATA')
+        if not path_to_sublime_text_data or not os.path.exists(path_to_sublime_text_data):
+            raise ValueError('Need directory to sublime text data. Use SUBLIME_TEXT_DATA env var.')
+
+        target = os.path.join(path_to_sublime_text_data, 'Packages', 'FSharp')
+
+        os.unlink(target)
+    else:
+        raise NotImplementedError('non-windows platform')
+
+
+@task
 def clean():
     """Clean dependencies.
     """
@@ -97,4 +111,4 @@ def noop():
 
 # Not working:
 # default_task = ['check_source_file_headers']
-default_task = 'noop'
+default_task = ['clean', 'get']
