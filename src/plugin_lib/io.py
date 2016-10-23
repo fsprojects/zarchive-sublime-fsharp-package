@@ -8,8 +8,9 @@ import os
 
 
 class AsyncStreamReader(threading.Thread):
-    '''Reads a process stream from an alternate thread.
+    '''Reads a process' stream line by line from an alternate thread.
     '''
+
     def __init__(self, stream, on_data, *args, **kwargs):
         '''
         @stream
@@ -21,14 +22,13 @@ class AsyncStreamReader(threading.Thread):
         super().__init__(*args, **kwargs)
         self.stream = stream
         self.on_data = on_data
-        assert self.on_data, 'wrong call: must provide callback'
+        assert self.on_data, "wrong call: must provide 'on_data' callback"
 
     def run(self):
         while True:
             data = self.stream.readline()
             if not data:
                 return
-
             self.on_data(data)
 
 

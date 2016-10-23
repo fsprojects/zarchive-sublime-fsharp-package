@@ -1,4 +1,0 @@
-source https://nuget.org/api/v2
-
-nuget FAKE
-http https://github.com/fsharp/FSharp.AutoComplete/releases/download/0.18.2/fsautocomplete.zip

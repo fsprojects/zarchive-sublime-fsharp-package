@@ -23,7 +23,7 @@ class IdleIntervalEventListener(sublime_plugin.EventListener):
     def __init__(self, *args, duration=500, **kwargs):
         """
         @duration
-          Interval after which an .on_idle() call will be made, expressed in
+          Interval after which an .on_idle(view) call will be made, expressed in
           milliseconds.
         """
 

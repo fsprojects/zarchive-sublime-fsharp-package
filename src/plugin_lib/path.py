@@ -197,5 +197,6 @@ def join_on_win(original, append):
     if is_windows():
         if append.startswith('.'):
             return original + append
-        return os.path.join(original, append)
+        elif append:
+            return os.path.join(original, append)
     return original
