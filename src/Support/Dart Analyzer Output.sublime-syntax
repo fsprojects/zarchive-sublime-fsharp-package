@@ -1,0 +1,32 @@
+%YAML 1.2
+---
+name: Dart Analysis Output
+hidden: true
+scope: text.dart-analysis-output
+
+contexts:
+  main:
+    - match: ^(ERROR\s+?)(\|)(.+?)(\|)(.+)$
+      captures:
+        1: error.label.dart-analysis-output
+        2: data.separator.dart-analysis-output
+        3: location-info.dart-analysis-output
+        4: data.separator.dart-analysis-output
+        5: error.message.dart-analysis-output
+      scope: error.dart-analysis-output
+    - match: ^(WARNING\s*?)(\|)(.+?)(\|)(.+)$
+      captures:
+        1: warning.label.dart-analysis-output
+        2: data.separator.dart-analysis-output
+        3: location-info.dart-analysis-output
+        4: data.separator.dart-analysis-output
+        5: warning.message.dart-analysis-output
+      scope: warning.dart-analysis-output
+    - match: ^(INFO\s+?)(\|)(.+?)(\|)(.+)$
+      captures:
+        1: info.label.dart-analysis-output
+        2: data.separator.dart-analysis-output
+        3: location-info.dart-analysis-output
+        4: data.separator.dart-analysis-output
+        5: info.message.dart-analysis-output
+      scope: info.dart-analysis-output
