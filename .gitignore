@@ -5,3 +5,7 @@ bin/
 release/
 
 *.sublime-workspace
+
+src/common
+src/plugin_lib
+src/analytics
