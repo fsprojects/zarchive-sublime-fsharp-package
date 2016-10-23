@@ -1,0 +1,66 @@
+{
+	"build_systems":
+	[
+		{
+			"name": "Build FSharp",
+			"shell_cmd": "./build.sh",
+			"variants":
+			[
+				{
+					"name": "Publish Locally (Install)",
+					"shell_cmd": "./build.sh install",
+					"windows":
+					{
+						"shell_cmd": ".\\build.cmd install"
+					}
+				},
+				{
+					"name": "Test (All)",
+					"target": "run_fsharp_tests",
+					"working_dir": "${project_path}/src"
+				},
+				{
+					"active_file_only": true,
+					"name": "Test (This File Only)",
+					"target": "run_fsharp_tests",
+					"working_dir": "${project_path}/src"
+				}
+			],
+			"windows":
+			{
+				"shell_cmd": ".\\build.cmd"
+			},
+			"working_dir": "${project_path}"
+		}
+	],
+	"folders":
+	[
+		{
+			"folder_exclude_patterns":
+			[
+				".svn",
+				".git",
+				".hg",
+				"CVS",
+				"bin",
+				".paket",
+				"packages",
+				"paket-files"
+			],
+			"path": "."
+		},
+		{
+			"path": "C:\\Users\\guill\\Documents\\Dev\\sublime-packages\\sublime-fsharp-package\\meta-build"
+		},
+		{
+			"path": "C:\\Users\\guill\\Documents\\Dev\\sublime-packages\\sublime-fsharp-package\\rxst\\dev"
+		}
+	],
+	"settings":
+	{
+		"default_line_ending": "unix",
+		"ensure_new_line_at_eof_on_save": true,
+		"translate_tabs_to_spaces": true,
+		"trim_trailing_white_space_on_save": true
+	}
+}
