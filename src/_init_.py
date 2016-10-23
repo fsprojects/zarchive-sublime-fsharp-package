@@ -82,7 +82,7 @@ class LogPanelHandler(Handler):
         configuration = OutputPanelConfiguration()
         configuration.name = 'fsharp.log'
         configuration.settings = [
-                ('syntax', 'Packages/FSharp/Support/Dart Log Output.sublime-syntax'),
+                ('syntax', 'Packages/FSharp/Support/FSharp Log Output.sublime-syntax'),
                 ]
 
         self.panel = OutputPanel(
