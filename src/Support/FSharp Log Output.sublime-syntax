@@ -1,36 +1,36 @@
 %YAML 1.2
 ---
-name: Dart Log Output
+name: FSharp Log Output
 hidden: false
-scope: text.dart-log
+scope: text.fsharp-log
 
 contexts:
   main:
     - match: ^(\[)(ERROR)(\])\s+(.+)$
-      scope: error.dart-log
+      scope: error.fsharp-log
       captures:
-        1: error.delimiter.start.dart-log
-        2: error.marker.dart-log
-        3: error.delimiter.end.dart-log
-        4: error.text.dart-log
+        1: error.delimiter.start.fsharp-log
+        2: error.marker.fsharp-log
+        3: error.delimiter.end.fsharp-log
+        4: error.text.fsharp-log
     - match: ^(\[)(INFO)(\])\s+(.+)$
-      scope: info.dart-log
+      scope: info.fsharp-log
       captures:
-        1: info.delimiter.start.dart-log
-        2: info.marker.dart-log
-        3: info.delimiter.end.dart-log
-        4: info.text.dart-log
+        1: info.delimiter.start.fsharp-log
+        2: info.marker.fsharp-log
+        3: info.delimiter.end.fsharp-log
+        4: info.text.fsharp-log
     - match: ^(\[)(WARNING)(\])\s+(.+)$
-      scope: warning.dart-log
+      scope: warning.fsharp-log
       captures:
-        1: warning.delimiter.start.dart-log
-        2: warning.marker.dart-log
-        3: warning.delimiter.end.dart-log
-        4: warning.text.dart-log
+        1: warning.delimiter.start.fsharp-log
+        2: warning.marker.fsharp-log
+        3: warning.delimiter.end.fsharp-log
+        4: warning.text.fsharp-log
     - match: ^(\[)(DEBUG)(\])\s+(.+)$
-      scope: debug.dart-log
+      scope: debug.fsharp-log
       captures:
-        1: debug.delimiter.start.dart-log
-        2: debug.marker.dart-log
-        3: debug.delimiter.end.dart-log
-        4: debug.text.dart-log
+        1: debug.delimiter.start.fsharp-log
+        2: debug.marker.fsharp-log
+        3: debug.delimiter.end.fsharp-log
+        4: debug.text.fsharp-log

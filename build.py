@@ -67,7 +67,7 @@ def develop():
         if not path_to_sublime_text_data or not os.path.exists(path_to_sublime_text_data):
             raise ValueError('Need directory to sublime text data. Use SUBLIME_TEXT_DATA env var.')
 
-        target = os.path.join(path_to_sublime_text_data, 'Packages', 'FSharp')
+        target = os.path.join(path_to_sublime_text_data, 'Packages', 'Palantir_fsharp')
         # target_tests = os.path.join(path_to_sublime_text_data, 'Packages', 'Darttests')
 
         call(['mklink', '/J', target, 'src'], shell=True)
@@ -83,7 +83,7 @@ def undevelop():
         if not path_to_sublime_text_data or not os.path.exists(path_to_sublime_text_data):
             raise ValueError('Need directory to sublime text data. Use SUBLIME_TEXT_DATA env var.')
 
-        target = os.path.join(path_to_sublime_text_data, 'Packages', 'FSharp')
+        target = os.path.join(path_to_sublime_text_data, 'Packages', 'Palantir_fsharp')
 
         os.unlink(target)
     else:

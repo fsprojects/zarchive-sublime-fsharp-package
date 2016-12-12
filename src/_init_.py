@@ -6,13 +6,13 @@ from logging import StreamHandler
 from logging import Handler
 
 
-_root_logger = logging.getLogger('FSharp')
+_root_logger = logging.getLogger('Palantir.Palantir_fsharp')
 _root_logger.setLevel(logging.INFO)
 handler = StreamHandler()
 handler.setLevel(logging.ERROR)
 _root_logger.addHandler(handler)
 
-_log = logging.getLogger(__name__)
+_log = logging.getLogger('Palantir.Palantir_fsharp._init_')
 
 
 # Load rx library
@@ -38,9 +38,8 @@ from .plugin_lib.errors import SublimeTextCodeIssueManagerApi
 from .common.di import features
 from .common.path import truncate_at_home
 
-# from .server.server import Server
-# from .server.server import ServerApi
-# from .server.server import ServerWrapper
+from .server import FSharpServerApi
+from .plugin_lib.server import ServerWrapper
 
 # from .plugin.sdk import discover_sdk
 from ._version_ import version_as_text
@@ -64,74 +63,10 @@ def send_telemetry_event(data):
 
 
 features.add('telemetry_events', telemetry_events)
-features.add('editor_context', EditorContext())
-
-# Working around API loading in ST (not available until after plugin_loaded() has exited).
-# features.add('sdk', Exception('workaround for ST API loading'))
-features.add('error_manager', Exception('workaround for ST API loading'))
-# features.add('server', ServerWrapper(api=Server()))
-# features.add('completions', Completions(features.features['server']))
-
-
-class LogPanelHandler(Handler):
-    '''A logging handler that logs to an OutputPanel.
-    '''
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        configuration = OutputPanelConfiguration()
-        configuration.name = 'fsharp.log'
-        configuration.settings = [
-                ('syntax', 'Packages/FSharp/Support/FSharp Log Output.sublime-syntax'),
-                ]
-
-        self.panel = OutputPanel(
-                api=SublimeTextOutputPanelApi(),
-                configuration=configuration)
-
-    def emit(self, record):
-        self.panel.write(self.format(record) + '\n')
-
-
-def set_up_logger():
-    formatter = logging.Formatter(
-            "[%(levelname)s] - %(asctime)s - %(name)s - %(message)s")
-    handler = LogPanelHandler()
-    handler.setFormatter(formatter)
-    _root_logger.addHandler(handler)
-
 
 def plugin_loaded():
-    set_up_logger()
 
     _log.info('Sublime Text Plugin for F# version %s', version_as_text)
-
-    # sdk = discover_sdk()
-    # if not sdk:
-        # _log.error('No Dart SDK could be autodiscovered. Aborting plugin initialization.')
-        # features.features.clear()
-        # return
-
-    # del features.features['sdk']
-    # features.add('sdk', sdk)
-
-    def make_error_manager():
-        configuration = CodeIssueManagerConfiguration()
-        configuration.key = 'fsharp.errors'
-        configuration.settings = [
-            ('syntax', 'Packages/FSharp/Support/FSharp Analysis Output.tmLanguage'),
-            ]
-        return CodeIssueManager(
-                api=SublimeTextCodeIssueManagerApi(configuration=configuration),
-                issue_types=['ERROR', 'WARNING', 'INFO'],
-                )
-
-    del features.features['error_manager']
-    features.add('error_manager', make_error_manager)
-
-    # _log.info('Using dart SDK at %s', os.path.dirname(truncate_at_home(sdk.dart_path)))
-
-    # features.features['server'].start(sdk)
 
     telemetry_events \
         .subscribe(lambda x: str(x))
