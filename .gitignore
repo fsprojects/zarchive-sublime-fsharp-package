@@ -3,6 +3,7 @@ packages/
 paket-files/
 bin/
 release/
+__pycache__
 
 *.sublime-workspace
 
