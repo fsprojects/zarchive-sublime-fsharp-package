@@ -45,7 +45,8 @@
 				"bin",
 				".paket",
 				"packages",
-				"paket-files"
+				"paket-files",
+				"__pycache__"
 			],
 			"path": "."
 		},
