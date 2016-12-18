@@ -26,15 +26,6 @@ from .analytics.ga import GaEvent
 from .analytics.ga import GaService
 from .analytics.ga import UserAgent
 
-from .plugin_lib.auto_complete import Completions
-from .plugin_lib.editor_context import EditorContext
-from .plugin_lib.panels import OutputPanel
-from .plugin_lib.panels import OutputPanelConfiguration
-from .plugin_lib.panels import SublimeTextOutputPanelApi
-from .plugin_lib.errors import CodeIssueManager
-from .plugin_lib.errors import CodeIssueManagerConfiguration
-from .plugin_lib.errors import SublimeTextCodeIssueManagerApi
-
 from .common.di import features
 from .common.path import truncate_at_home
 

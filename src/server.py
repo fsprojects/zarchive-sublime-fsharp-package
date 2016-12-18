@@ -27,16 +27,18 @@ from rx import Observable
 from rx.concurrency.schedulerbase import Scheduler
 from rx.subjects import Subject
 
-from .plugin_lib.auto_complete import Element
-from .plugin_lib.auto_complete import CompletionSuggestion
+from Palantir.plugin.auto_complete import Element
+from Palantir.plugin.auto_complete import CompletionSuggestion
 
 from .plugin_lib.server import ServerWrapper
-from .plugin_lib.server import ServerApi
+# from .plugin_lib.server import ServerApi
 from .plugin_lib.server import request_id_generator
 from .plugin_lib.server import line_reader
 
 from Palantir.plugin_lib.errors import CodeIssue
 from Palantir.plugin.palantir import Palantir
+from Palantir.plugin.palantir import LanguageServer
+from Palantir.plugin.palantir import PalantirConfiguration
 
 # from .api.protocol import AnalysisErrorsParams
 # from .api.protocol import CompletionResultsParams
@@ -97,10 +99,13 @@ def format_completion_suggestions(suggestions, *args):
 
 class Domains:
 
-    def __init__(self, source, notifications):
+    def __init__(self, source, notifications, server):
         self.server = DomainServer(source, notifications)
         self.analysis = DomainAnalysis(source, notifications)
-        self.completion = DomainCompletion(source, notifications)
+        self.completion = DomainCompletion(source, notifications, server)
+        self.edit = DomainEdit(source, notifications)
+        self.search = DomainSearch(source, notifications)
+        self.activity = DomainActivity(source, notifications, server)
 
 
 class Domain:
@@ -113,6 +118,48 @@ class Domain:
     @property
     def notifications(self):
         return self._notifications
+
+
+class DomainEdit(Domain):
+
+    def __init__(self, source, notifications):
+        super().__init__('edit', source, notifications)
+
+    def format(self, context):
+        pass
+
+    @property
+    def results(self):
+        return Observable.empty()
+
+
+class DomainActivity(Domain):
+
+    def __init__(self, source, notifications, server):
+        super().__init__('activity', source, notifications)
+        self.server = server
+
+    def update_context(self, context):
+        self.server.update_context(context)
+
+    def update_file_content(self, file, content):
+        self.server.update_file_content(file, content)
+
+    def update_file_saved(self, file):
+        pass
+
+
+class DomainSearch(Domain):
+
+    def __init__(self, source, notifications):
+        super().__init__('search', source, notifications)
+
+    def go_to_definition(self, pattern):
+        pass
+
+    @property
+    def results(self):
+        return Observable.empty()
 
 
 class DomainAnalysis(Domain):
@@ -130,8 +177,9 @@ class DomainAnalysis(Domain):
 
 class DomainCompletion(Domain):
 
-    def __init__(self, source, notifications):
+    def __init__(self, source, notifications, server):
         super().__init__('completion', source, notifications)
+        self.server = server
 
     @property
     def suggestions(self):
@@ -143,6 +191,9 @@ class DomainCompletion(Domain):
     def update(self, id):
         with self.lock:
             self._id = id
+
+    def request_completion_suggestions(self, context):
+        self.server.request_completion_suggestions(context)
 
 
 class DomainServer(Domain):
@@ -180,12 +231,14 @@ def deserialize(notification, type_):
 
 
 @Palantir.register
-class FSharpServerApi(ServerApi):
+class FSharpServerApi(LanguageServer):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._name = 'fsharp'
         self.proc = None
+        # Commands to be sent to Palantir.
+        self.commands = None
 
         self.subject = Subject()
 
@@ -196,18 +249,22 @@ class FSharpServerApi(ServerApi):
 
         self.notifications = self.out
 
-        self.domains = Domains(self.out, self.notifications)
-        self.domains.server.errors \
+        self._domains = Domains(self.out, self.notifications, self)
+        self._domains.server.errors \
                 .subscribe(_log.error)
-        self.domains.server.infos \
+        self._domains.server.infos \
                 .subscribe(_log.info)
-        self.domains.server.connected \
+        self._domains.server.connected \
                 .select(lambda x: x.version) \
                 .subscribe(lambda x: _log.info("Connected to Dart Analysis Server %s" % x))
 
     @property
     def name(self):
         return self._name
+
+    @property
+    def domains(self):
+        return self._domains
 
     def has_support_for(self, extension):
         return extension in ('.fs', '.fsx', '.fsi')
@@ -240,6 +297,13 @@ class FSharpServerApi(ServerApi):
         pass
 
     def awake(self, commands):
+        if not self.commands:
+            self.commands = commands
+        config = PalantirConfiguration()
+        config.member_operator= '.'
+        config.call_operator= '('
+        config.auto_complete_scope = 'source.fsharp'
+        self.commands.update_configuration(config)
         if not self.proc:
             self.start()
 
