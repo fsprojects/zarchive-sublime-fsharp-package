@@ -17,10 +17,3 @@ def is_fsharp_file(view):
 def is_active_file(view):
     return view.id() == sublime.active_window().active_view().id()
 
-
-##############################################################################
-# Make commands available to Sublime Text and start firing events.
-##############################################################################
-from .commands import *
-# from rxst.connectors import AsyncEventsConnector
-##############################################################################
