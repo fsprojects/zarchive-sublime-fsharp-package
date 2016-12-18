@@ -1,60 +1,21 @@
 {
-	"build_systems":
-	[
-		{
-			"name": "Build FSharp",
-			"shell_cmd": "./build.sh",
-			"variants":
-			[
-				{
-					"name": "Publish Locally (Install)",
-					"shell_cmd": "./build.sh install",
-					"windows":
-					{
-						"shell_cmd": ".\\build.cmd install"
-					}
-				},
-				{
-					"name": "Test (All)",
-					"target": "run_fsharp_tests",
-					"working_dir": "${project_path}/src"
-				},
-				{
-					"active_file_only": true,
-					"name": "Test (This File Only)",
-					"target": "run_fsharp_tests",
-					"working_dir": "${project_path}/src"
-				}
-			],
-			"windows":
-			{
-				"shell_cmd": ".\\build.cmd"
-			},
-			"working_dir": "${project_path}"
-		}
-	],
+	"build_systems": [],
 	"folders":
 	[
 		{
 			"folder_exclude_patterns":
 			[
-				".svn",
-				".git",
-				".hg",
-				"CVS",
-				"bin",
 				".paket",
+				"__pycache__",
+				"bin",
 				"packages",
 				"paket-files",
-				"__pycache__"
 			],
 			"path": "."
 		},
 		{
+			"folder_exclude_patterns": ["__pycache__"],
 			"path": "C:\\Users\\guill\\Documents\\Dev\\sublime-packages\\sublime-fsharp-package\\meta-build"
-		},
-		{
-			"path": "C:\\Users\\guill\\Documents\\Dev\\sublime-packages\\sublime-fsharp-package\\rxst\\dev"
 		}
 	],
 	"settings":
