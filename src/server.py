@@ -31,7 +31,6 @@ from Palantir.plugin.auto_complete import Element
 from Palantir.plugin.auto_complete import CompletionSuggestion
 
 from .plugin_lib.server import ServerWrapper
-# from .plugin_lib.server import ServerApi
 from .plugin_lib.server import request_id_generator
 from .plugin_lib.server import line_reader
 
@@ -39,12 +38,6 @@ from Palantir.plugin_lib.errors import CodeIssue
 from Palantir.plugin.palantir import Palantir
 from Palantir.plugin.palantir import LanguageServer
 from Palantir.plugin.palantir import PalantirConfiguration
-
-# from .api.protocol import AnalysisErrorsParams
-# from .api.protocol import CompletionResultsParams
-# from .api.protocol import ServerConnectedParams
-# from .api.protocol import ServerErrorParams
-
 
 # {'Kind': 'errors', 'Data':
 # [{'StartLine': 6,
@@ -139,13 +132,21 @@ class DomainActivity(Domain):
         super().__init__('activity', source, notifications)
         self.server = server
 
-    def update_context(self, context):
-        self.server.update_context(context)
+    def update_active_file(self, active_file_name, visible_file_names):
+        # TODO: make this call accept visible_file_names too
+        self.server.update_context(active_file_name)
 
     def update_file_content(self, file, content):
         self.server.update_file_content(file, content)
 
     def update_file_saved(self, file):
+        pass
+
+    def update_selections(self, selections):
+        pass
+
+    # sync call
+    def on_pre_save(self, file_name):
         pass
 
 
@@ -329,16 +330,12 @@ class FSharpServerApi(LanguageServer):
         return self.domains.completions.suggestions
 
     def send(self, data):
-        _log.info(data)
         bytes_ = data.encode('utf8')
         self.proc.stdin.write(bytes_ + b'\n')
         self.proc.stdin.flush()
 
     def process_response_callbacks(self, response):
         return super().process_response_callbacks(response)
-
-    def get_response_id(self, response):
-        return response['id']
 
     def send_request(self, method, params, callback=None):
         self.send('xxx')
